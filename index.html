@@ -1,7 +1,7 @@
 <!-- ===================================== -->
 <!-- FILE: business-login.html            -->
 <!-- SkillEarn Business Login/Register    -->
-<!-- Beautiful UI + reCAPTCHA Ready       -->
+<!-- reCAPTCHA v3 FIXED VERSION           -->
 <!-- ===================================== -->
 <!DOCTYPE html>
 <html lang="en">
@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- GOOGLE RECAPTCHA -->
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<!-- RECAPTCHA v3 -->
+<script src="https://www.google.com/recaptcha/api.js?render=6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx"></script>
 
 <style>
 *{
@@ -51,9 +51,7 @@ margin-bottom:8px;
 color:#2563eb;
 }
 
-.logo span{
-color:#111827;
-}
+.logo span{color:#111827;}
 
 .sub{
 text-align:center;
@@ -83,13 +81,8 @@ background:#2563eb;
 color:#fff;
 }
 
-.form{
-display:none;
-}
-
-.form.active{
-display:block;
-}
+.form{display:none;}
+.form.active{display:block;}
 
 .input{
 width:100%;
@@ -147,35 +140,27 @@ font-size:14px;
 
 <!-- LOGIN -->
 <div id="login" class="form active">
-
 <input class="input" id="loginEmail" type="email" placeholder="Business Email">
 <input class="input" id="loginPassword" type="password" placeholder="Password">
 
-<div class="g-recaptcha" data-sitekey="6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx"></div>
-
 <button class="btn" onclick="login()">Login Business Account</button>
-
 </div>
 
 <!-- REGISTER -->
 <div id="register" class="form">
-
 <input class="input" id="name" type="text" placeholder="Business Name">
 <input class="input" id="country" type="text" placeholder="Country">
 <input class="input" id="email" type="email" placeholder="Business Email">
 <input class="input" id="phone" type="text" placeholder="Phone Number">
 <input class="input" id="password" type="password" placeholder="Password">
 
-<div class="g-recaptcha" data-sitekey="6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx"></div>
-
 <button class="btn" onclick="register()">Create Business Account</button>
-
 </div>
 
 <div id="status" class="status"></div>
 
 <div class="note">
-Protected with reCAPTCHA & SkillEarn Security System
+Protected with reCAPTCHA v3 Security System
 </div>
 
 </div>
@@ -184,17 +169,10 @@ Protected with reCAPTCHA & SkillEarn Security System
 const API = "https://skillearn.onrender.com";
 
 function showTab(id){
-
-document.querySelectorAll(".form").forEach(x=>{
-x.classList.remove("active");
-});
-
-document.querySelectorAll(".tab").forEach(x=>{
-x.classList.remove("active");
-});
+document.querySelectorAll(".form").forEach(x=>x.classList.remove("active"));
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
 
 document.getElementById(id).classList.add("active");
-
 event.target.classList.add("active");
 }
 
@@ -207,13 +185,8 @@ el.className = "status " + type;
 /* LOGIN */
 async function login(){
 
-try{
-
-const token = grecaptcha.getResponse();
-if(!token){
-msg("Complete reCAPTCHA","error");
-return;
-}
+grecaptcha.ready(function() {
+grecaptcha.execute('6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx', {action: 'login'}).then(async function(token) {
 
 const res = await fetch(API + "/api/auth/login",{
 method:"POST",
@@ -230,9 +203,7 @@ recaptchaToken:token
 const data = await res.json();
 
 if(data.access){
-
 localStorage.setItem("token",data.access);
-
 msg("Login successful","success");
 
 setTimeout(()=>{
@@ -243,22 +214,17 @@ window.location.href="business-dashboard.html";
 msg(data.message || "Login failed","error");
 }
 
-}catch(err){
-msg("Server error","error");
-}
+});
+
+});
 
 }
 
 /* REGISTER */
 async function register(){
 
-try{
-
-const token = grecaptcha.getResponse();
-if(!token){
-msg("Complete reCAPTCHA","error");
-return;
-}
+grecaptcha.ready(function() {
+grecaptcha.execute('6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx', {action: 'register'}).then(async function(token) {
 
 const res = await fetch(API + "/api/auth/register",{
 method:"POST",
@@ -283,12 +249,12 @@ msg("Registration successful. Login now.","success");
 msg(data.message || "Registration failed","error");
 }
 
-}catch(err){
-msg("Server error","error");
-}
+});
+
+});
 
 }
 </script>
 
 </body>
-  </html>
+</html>
