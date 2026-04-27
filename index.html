@@ -11,7 +11,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Google reCAPTCHA v3 -->
 <script src="https://www.google.com/recaptcha/api.js?render=6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx"></script>
 
 <style>
@@ -124,7 +123,6 @@ color:#666;
 
 <h2>SkillEarn Business</h2>
 
-<!-- LOGIN -->
 <input class="input" id="loginEmail" type="email" placeholder="Business Email">
 <input class="input" id="loginPassword" type="password" placeholder="Password">
 
@@ -135,7 +133,6 @@ color:#666;
 
 <hr>
 
-<!-- REGISTER -->
 <input class="input" id="name" placeholder="Business Name">
 <input class="input" id="country" placeholder="Country">
 <input class="input" id="email" type="email" placeholder="Business Email">
@@ -147,7 +144,6 @@ color:#666;
 <span>Create Account</span>
 </button>
 
-<!-- DEBUG BUTTON -->
 <button class="btn" id="debugBtn" onclick="debugCaptcha()" style="background:#111827;">
 <span class="loader" id="debugLoader"></span>
 <span>Test reCAPTCHA</span>
@@ -165,26 +161,17 @@ Protected with reCAPTCHA v3 Security System
 const API = "https://skillearn.onrender.com";
 const SITE_KEY = "6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx";
 
-/* =========================
-   LOADER
-========================= */
 function setLoading(btnId, loaderId, state){
 document.getElementById(btnId).disabled = state;
 document.getElementById(loaderId).style.display = state ? "block" : "none";
 }
 
-/* =========================
-   STATUS
-========================= */
 function showStatus(msg,type=""){
 const el = document.getElementById("status");
 el.innerText = msg;
 el.className = "status " + type;
 }
 
-/* =========================
-   CAPTCHA TOKEN
-========================= */
 function getCaptcha(action){
 return new Promise((resolve,reject)=>{
 
@@ -202,9 +189,6 @@ grecaptcha.execute(SITE_KEY,{action})
 });
 }
 
-/* =========================
-   LOGIN
-========================= */
 async function login(){
 
 setLoading("loginBtn","loginLoader",true);
@@ -243,9 +227,6 @@ alert(err);
 setLoading("loginBtn","loginLoader",false);
 }
 
-/* =========================
-   REGISTER
-========================= */
 async function register(){
 
 setLoading("registerBtn","registerLoader",true);
@@ -286,9 +267,6 @@ alert(err);
 setLoading("registerBtn","registerLoader",false);
 }
 
-/* =========================
-   DEBUG CAPTCHA
-========================= */
 async function debugCaptcha(){
 
 setLoading("debugBtn","debugLoader",true);
@@ -300,14 +278,14 @@ const token = await getCaptcha("login");
 
 if(token && token.length > 20){
 showStatus("Token generated successfully","success");
-alert("TOKEN:\\n\\n" + token);
+alert("TOKEN:\n\n" + token);
 }else{
 showStatus("No token generated","error");
 }
 
 }catch(err){
 showStatus("reCAPTCHA failed","error");
-alert("ERROR:\\n\\n" + err);
+alert("ERROR:\n\n" + err);
 }
 
 setLoading("debugBtn","debugLoader",false);
