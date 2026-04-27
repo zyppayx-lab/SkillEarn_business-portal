@@ -1,7 +1,3 @@
-<!-- ===================================== -->
-<!-- SkillEarn Business Login/Register    -->
-<!-- reCAPTCHA v3 FIXED FRONTEND           -->
-<!-- ===================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,63 +5,112 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>SkillEarn Business Access</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<script src="https://www.google.com/recaptcha/api.js?render=6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx"></script>
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
+}
+
 body{
 min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-padding:20px;
 background:linear-gradient(135deg,#0f172a,#1d4ed8,#06b6d4);
+padding:20px;
 }
 
 .container{
 width:100%;
 max-width:470px;
-background:#fff;
-padding:30px;
-border-radius:22px;
-box-shadow:0 20px 60px rgba(0,0,0,.18);
+background:rgba(255,255,255,.96);
+padding:34px;
+border-radius:24px;
+box-shadow:0 25px 60px rgba(0,0,0,.18);
+backdrop-filter:blur(12px);
 }
 
-h2{text-align:center;margin-bottom:20px;color:#2563eb;}
+.logo{
+text-align:center;
+font-size:32px;
+font-weight:800;
+margin-bottom:8px;
+color:#2563eb;
+}
+
+.logo span{color:#111827;}
+
+.sub{
+text-align:center;
+color:#6b7280;
+margin-bottom:28px;
+font-size:14px;
+}
+
+.tabs{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-bottom:22px;
+}
+
+.tab{
+padding:12px;
+border:none;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+background:#e5e7eb;
+}
+
+.tab.active{
+background:#2563eb;
+color:#fff;
+}
+
+.form{display:none;}
+.form.active{display:block;}
 
 .input{
 width:100%;
-padding:13px;
-margin-bottom:12px;
+padding:14px;
+margin-bottom:14px;
 border-radius:12px;
-border:1px solid #ddd;
+border:1px solid #d1d5db;
 outline:none;
 font-size:15px;
 }
 
 .btn{
 width:100%;
-padding:13px;
+padding:14px;
 border:none;
 border-radius:12px;
+font-weight:800;
+cursor:pointer;
+font-size:15px;
+margin-top:12px;
 background:#2563eb;
 color:#fff;
-font-weight:700;
-font-size:15px;
-cursor:pointer;
-margin-top:10px;
 display:flex;
 justify-content:center;
 align-items:center;
 gap:10px;
 }
 
-.btn:disabled{opacity:.6;cursor:not-allowed;}
+.btn:disabled{
+opacity:.7;
+cursor:not-allowed;
+}
 
 .loader{
-width:16px;height:16px;
+width:16px;
+height:16px;
 border:2px solid #fff;
 border-top:2px solid transparent;
 border-radius:50%;
@@ -73,10 +118,20 @@ display:none;
 animation:spin 1s linear infinite;
 }
 
-@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+.note{
+text-align:center;
+font-size:13px;
+color:#6b7280;
+margin-top:16px;
+}
 
 .status{
-margin-top:15px;
+margin-top:14px;
 text-align:center;
 font-weight:700;
 font-size:14px;
@@ -84,15 +139,6 @@ font-size:14px;
 
 .success{color:#059669;}
 .error{color:#dc2626;}
-
-hr{margin:22px 0;border:none;border-top:1px solid #eee;}
-
-.note{
-margin-top:15px;
-font-size:13px;
-text-align:center;
-color:#666;
-}
 </style>
 </head>
 
@@ -100,7 +146,16 @@ color:#666;
 
 <div class="container">
 
-<h2>SkillEarn Business</h2>
+<div class="logo">Skill<span>Earn</span></div>
+<div class="sub">Business Portal • Run jobs, campaigns & hire talent</div>
+
+<div class="tabs">
+<button class="tab active" onclick="showTab('login',event)">Login</button>
+<button class="tab" onclick="showTab('register',event)">Register</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="form active">
 
 <input class="input" id="loginEmail" type="email" placeholder="Business Email">
 <input class="input" id="loginPassword" type="password" placeholder="Password">
@@ -110,12 +165,15 @@ color:#666;
 <span>Login</span>
 </button>
 
-<hr>
+</div>
 
-<input class="input" id="name" placeholder="Business Name">
-<input class="input" id="country" placeholder="Country">
+<!-- REGISTER -->
+<div id="register" class="form">
+
+<input class="input" id="name" type="text" placeholder="Business Name">
+<input class="input" id="country" type="text" placeholder="Country">
 <input class="input" id="email" type="email" placeholder="Business Email">
-<input class="input" id="phone" placeholder="Phone Number">
+<input class="input" id="phone" type="text" placeholder="Phone Number">
 <input class="input" id="password" type="password" placeholder="Password">
 
 <button class="btn" id="registerBtn" onclick="register()">
@@ -123,15 +181,12 @@ color:#666;
 <span>Create Account</span>
 </button>
 
-<button class="btn" id="debugBtn" onclick="debugCaptcha()" style="background:#111827;">
-<span class="loader" id="debugLoader"></span>
-<span>Test reCAPTCHA</span>
-</button>
+</div>
 
 <div id="status" class="status"></div>
 
 <div class="note">
-Protected with reCAPTCHA v3 Security System
+Protected with SkillEarn Security System
 </div>
 
 </div>
@@ -139,103 +194,85 @@ Protected with reCAPTCHA v3 Security System
 <script>
 
 const API = "https://skillearn.onrender.com";
-const SITE_KEY = "6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx";
 
-let isProcessing = false;
+/* ---------------- UI ---------------- */
 
-/* ---------------- UI HELPERS ---------------- */
+function showTab(id,e){
 
-function setLoading(btn, loader, state){
-document.getElementById(btn).disabled = state;
-document.getElementById(loader).style.display = state ? "block" : "none";
+document.querySelectorAll(".form").forEach(x=>{
+x.classList.remove("active");
+});
+
+document.querySelectorAll(".tab").forEach(x=>{
+x.classList.remove("active");
+});
+
+document.getElementById(id).classList.add("active");
+
+if(e){
+e.target.classList.add("active");
+}
 }
 
-function showStatus(msg,type=""){
+function msg(text,type=""){
 const el = document.getElementById("status");
-el.innerText = msg;
+el.innerText = text;
 el.className = "status " + type;
 }
 
-/* ---------------- CAPTCHA ---------------- */
-
-function getCaptcha(action){
-return new Promise((resolve,reject)=>{
-
-if(!window.grecaptcha){
-reject("reCAPTCHA not loaded");
-return;
-}
-
-grecaptcha.ready(()=>{
-grecaptcha.execute(SITE_KEY,{action})
-.then(token=>{
-console.log("CAPTCHA TOKEN ("+action+"):", token);
-resolve(token);
-})
-.catch(err=>reject(err));
-});
-
-});
+function setLoading(btn,loader,state){
+document.getElementById(btn).disabled = state;
+document.getElementById(loader).style.display = state ? "block" : "none";
 }
 
 /* ---------------- LOGIN ---------------- */
 
 async function login(){
 
-if(isProcessing) return;
-isProcessing = true;
-
 setLoading("loginBtn","loginLoader",true);
-showStatus("Logging in...");
+msg("Logging in...");
 
 try{
-
-const token = await getCaptcha("login");
 
 const res = await fetch(API + "/api/auth/login",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
 email:document.getElementById("loginEmail").value,
-password:document.getElementById("loginPassword").value,
-recaptchaToken:token
+password:document.getElementById("loginPassword").value
 })
 });
 
 const data = await res.json();
 
-console.log("LOGIN RESPONSE:", data);
-
 if(data.access){
-showStatus("Login successful","success");
+msg("Login successful","success");
 localStorage.setItem("token",data.access);
+
+setTimeout(()=>{
+window.location.href="business-dashboard.html";
+},1000);
+
 }else{
-showStatus(data.message || "Login failed","error");
+msg(data.message || "Login failed","error");
 }
 
 }catch(err){
 console.error(err);
-showStatus("Login error","error");
-alert(err);
+msg("Server error","error");
 }
 
 setLoading("loginBtn","loginLoader",false);
-isProcessing = false;
 }
 
 /* ---------------- REGISTER ---------------- */
 
 async function register(){
 
-if(isProcessing) return;
-isProcessing = true;
-
 setLoading("registerBtn","registerLoader",true);
-showStatus("Creating account...");
+msg("Creating account...");
 
 try{
-
-const token = await getCaptcha("register");
 
 const res = await fetch(API + "/api/auth/register",{
 method:"POST",
@@ -245,59 +282,27 @@ name:document.getElementById("name").value,
 country:document.getElementById("country").value,
 email:document.getElementById("email").value,
 phone:document.getElementById("phone").value,
-password:document.getElementById("password").value,
-recaptchaToken:token
+password:document.getElementById("password").value
 })
 });
 
 const data = await res.json();
 
-console.log("REGISTER RESPONSE:", data);
-
 if(data.id){
-showStatus("Registration successful","success");
+msg("Registration successful. Login now.","success");
 }else{
-showStatus(data.message || "Registration failed","error");
+msg(data.message || "Registration failed","error");
 }
 
 }catch(err){
 console.error(err);
-showStatus("Register error","error");
-alert(err);
+msg("Server error","error");
 }
 
 setLoading("registerBtn","registerLoader",false);
-isProcessing = false;
-}
-
-/* ---------------- DEBUG ---------------- */
-
-async function debugCaptcha(){
-
-setLoading("debugBtn","debugLoader",true);
-showStatus("Testing reCAPTCHA...");
-
-try{
-
-const token = await getCaptcha("login");
-
-if(token){
-showStatus("Token generated successfully","success");
-alert("TOKEN:\n\n" + token);
-}else{
-showStatus("No token generated","error");
-}
-
-}catch(err){
-console.error(err);
-showStatus("reCAPTCHA failed","error");
-alert(err);
-}
-
-setLoading("debugBtn","debugLoader",false);
 }
 
 </script>
 
 </body>
-</html>
+  </html>
