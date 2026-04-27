@@ -1,6 +1,6 @@
 <!-- ===================================== -->
 <!-- SkillEarn Business Login/Register    -->
-<!-- reCAPTCHA v3 + Loader + Debug Button -->
+<!-- reCAPTCHA v3 FIXED FRONTEND           -->
 <!-- ===================================== -->
 <!DOCTYPE html>
 <html lang="en">
@@ -14,13 +14,7 @@
 <script src="https://www.google.com/recaptcha/api.js?render=6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx"></script>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter,sans-serif;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
 body{
 min-height:100vh;
 display:flex;
@@ -39,11 +33,7 @@ border-radius:22px;
 box-shadow:0 20px 60px rgba(0,0,0,.18);
 }
 
-h2{
-text-align:center;
-margin-bottom:20px;
-color:#2563eb;
-}
+h2{text-align:center;margin-bottom:20px;color:#2563eb;}
 
 .input{
 width:100%;
@@ -72,14 +62,10 @@ align-items:center;
 gap:10px;
 }
 
-.btn:disabled{
-opacity:.65;
-cursor:not-allowed;
-}
+.btn:disabled{opacity:.6;cursor:not-allowed;}
 
 .loader{
-width:16px;
-height:16px;
+width:16px;height:16px;
 border:2px solid #fff;
 border-top:2px solid transparent;
 border-radius:50%;
@@ -87,10 +73,7 @@ display:none;
 animation:spin 1s linear infinite;
 }
 
-@keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
-}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
 .status{
 margin-top:15px;
@@ -102,11 +85,7 @@ font-size:14px;
 .success{color:#059669;}
 .error{color:#dc2626;}
 
-hr{
-margin:22px 0;
-border:none;
-border-top:1px solid #eee;
-}
+hr{margin:22px 0;border:none;border-top:1px solid #eee;}
 
 .note{
 margin-top:15px;
@@ -158,12 +137,17 @@ Protected with reCAPTCHA v3 Security System
 </div>
 
 <script>
+
 const API = "https://skillearn.onrender.com";
 const SITE_KEY = "6Lel28gsAAAAAMKCUTsgpVkpivxqwUel3n-4vpNx";
 
-function setLoading(btnId, loaderId, state){
-document.getElementById(btnId).disabled = state;
-document.getElementById(loaderId).style.display = state ? "block" : "none";
+let isProcessing = false;
+
+/* ---------------- UI HELPERS ---------------- */
+
+function setLoading(btn, loader, state){
+document.getElementById(btn).disabled = state;
+document.getElementById(loader).style.display = state ? "block" : "none";
 }
 
 function showStatus(msg,type=""){
@@ -172,24 +156,34 @@ el.innerText = msg;
 el.className = "status " + type;
 }
 
+/* ---------------- CAPTCHA ---------------- */
+
 function getCaptcha(action){
 return new Promise((resolve,reject)=>{
 
-if(typeof grecaptcha === "undefined"){
-reject("reCAPTCHA script not loaded");
+if(!window.grecaptcha){
+reject("reCAPTCHA not loaded");
 return;
 }
 
 grecaptcha.ready(()=>{
 grecaptcha.execute(SITE_KEY,{action})
-.then(token => resolve(token))
-.catch(err => reject(err));
+.then(token=>{
+console.log("CAPTCHA TOKEN ("+action+"):", token);
+resolve(token);
+})
+.catch(err=>reject(err));
 });
 
 });
 }
 
+/* ---------------- LOGIN ---------------- */
+
 async function login(){
+
+if(isProcessing) return;
+isProcessing = true;
 
 setLoading("loginBtn","loginLoader",true);
 showStatus("Logging in...");
@@ -200,9 +194,7 @@ const token = await getCaptcha("login");
 
 const res = await fetch(API + "/api/auth/login",{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
+headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
 email:document.getElementById("loginEmail").value,
 password:document.getElementById("loginPassword").value,
@@ -212,6 +204,8 @@ recaptchaToken:token
 
 const data = await res.json();
 
+console.log("LOGIN RESPONSE:", data);
+
 if(data.access){
 showStatus("Login successful","success");
 localStorage.setItem("token",data.access);
@@ -220,14 +214,21 @@ showStatus(data.message || "Login failed","error");
 }
 
 }catch(err){
+console.error(err);
 showStatus("Login error","error");
 alert(err);
 }
 
 setLoading("loginBtn","loginLoader",false);
+isProcessing = false;
 }
 
+/* ---------------- REGISTER ---------------- */
+
 async function register(){
+
+if(isProcessing) return;
+isProcessing = true;
 
 setLoading("registerBtn","registerLoader",true);
 showStatus("Creating account...");
@@ -238,9 +239,7 @@ const token = await getCaptcha("register");
 
 const res = await fetch(API + "/api/auth/register",{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
+headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
 name:document.getElementById("name").value,
 country:document.getElementById("country").value,
@@ -253,6 +252,8 @@ recaptchaToken:token
 
 const data = await res.json();
 
+console.log("REGISTER RESPONSE:", data);
+
 if(data.id){
 showStatus("Registration successful","success");
 }else{
@@ -260,12 +261,16 @@ showStatus(data.message || "Registration failed","error");
 }
 
 }catch(err){
+console.error(err);
 showStatus("Register error","error");
 alert(err);
 }
 
 setLoading("registerBtn","registerLoader",false);
+isProcessing = false;
 }
+
+/* ---------------- DEBUG ---------------- */
 
 async function debugCaptcha(){
 
@@ -276,7 +281,7 @@ try{
 
 const token = await getCaptcha("login");
 
-if(token && token.length > 20){
+if(token){
 showStatus("Token generated successfully","success");
 alert("TOKEN:\n\n" + token);
 }else{
@@ -284,13 +289,15 @@ showStatus("No token generated","error");
 }
 
 }catch(err){
+console.error(err);
 showStatus("reCAPTCHA failed","error");
-alert("ERROR:\n\n" + err);
+alert(err);
 }
 
 setLoading("debugBtn","debugLoader",false);
 }
+
 </script>
 
 </body>
-   </html>
+</html>
