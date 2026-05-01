@@ -1,308 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SkillEarn Business Access</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkillEarn Business</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter,sans-serif;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f9ff;
 }
 
-body{
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(135deg,#0f172a,#1d4ed8,#06b6d4);
-padding:20px;
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #0a66ff, #0044cc);
+  color: white;
+  padding: 50px 20px;
+  text-align: center;
 }
 
-.container{
-width:100%;
-max-width:470px;
-background:rgba(255,255,255,.96);
-padding:34px;
-border-radius:24px;
-box-shadow:0 25px 60px rgba(0,0,0,.18);
-backdrop-filter:blur(12px);
+.hero h1 {
+  margin: 0;
+  font-size: 26px;
 }
 
-.logo{
-text-align:center;
-font-size:32px;
-font-weight:800;
-margin-bottom:8px;
-color:#2563eb;
+.hero p {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
-.logo span{color:#111827;}
-
-.sub{
-text-align:center;
-color:#6b7280;
-margin-bottom:28px;
-font-size:14px;
+.btn-group {
+  margin-top: 20px;
 }
 
-.tabs{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-bottom:22px;
+.btn {
+  padding: 12px 18px;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
 }
 
-.tab{
-padding:12px;
-border:none;
-border-radius:12px;
-font-weight:700;
-cursor:pointer;
-background:#e5e7eb;
+.btn-primary {
+  background: white;
+  color: #0a66ff;
+  font-weight: bold;
 }
 
-.tab.active{
-background:#2563eb;
-color:#fff;
+.btn-outline {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
 }
 
-.form{display:none;}
-.form.active{display:block;}
-
-.input{
-width:100%;
-padding:14px;
-margin-bottom:14px;
-border-radius:12px;
-border:1px solid #d1d5db;
-outline:none;
-font-size:15px;
+/* SECTION */
+.section {
+  padding: 20px;
 }
 
-.btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-font-weight:800;
-cursor:pointer;
-font-size:15px;
-margin-top:12px;
-background:#2563eb;
-color:#fff;
-display:flex;
-justify-content:center;
-align-items:center;
-gap:10px;
+.section h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
 }
 
-.btn:disabled{
-opacity:.7;
-cursor:not-allowed;
+/* CARDS */
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.loader{
-width:16px;
-height:16px;
-border:2px solid #fff;
-border-top:2px solid transparent;
-border-radius:50%;
-display:none;
-animation:spin 1s linear infinite;
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-@keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
+/* FOOTER */
+.footer {
+  padding: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: #777;
 }
 
-.note{
-text-align:center;
-font-size:13px;
-color:#6b7280;
-margin-top:16px;
+.footer a {
+  color: #0a66ff;
+  text-decoration: none;
+  margin: 0 6px;
 }
-
-.status{
-margin-top:14px;
-text-align:center;
-font-weight:700;
-font-size:14px;
-}
-
-.success{color:#059669;}
-.error{color:#dc2626;}
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<!-- HERO -->
+<div class="hero">
+  <h1>Grow Your Business Faster</h1>
+  <p>Launch campaigns, hire talent, and scale your brand globally.</p>
 
-<div class="logo">Skill<span>Earn</span></div>
-<div class="sub">Business Portal • Run jobs, campaigns & hire talent</div>
-
-<div class="tabs">
-<button class="tab active" onclick="showTab('login',event)">Login</button>
-<button class="tab" onclick="showTab('register',event)">Register</button>
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="go('register.html')">
+      Create Campaign
+    </button>
+    <button class="btn btn-outline" onclick="go('login.html')">
+      Business Login
+    </button>
+  </div>
 </div>
 
-<!-- LOGIN -->
-<div id="login" class="form active">
+<!-- FEATURES -->
+<div class="section">
+  <h2>Why Businesses Choose SkillEarn</h2>
 
-<input class="input" id="loginEmail" type="email" placeholder="Business Email">
-<input class="input" id="loginPassword" type="password" placeholder="Password">
-
-<button class="btn" id="loginBtn" onclick="login()">
-<span class="loader" id="loginLoader"></span>
-<span>Login</span>
-</button>
-
+  <div class="card">🚀 Reach thousands of real users instantly</div>
+  <div class="card">🎯 Targeted campaigns (tasks, social, installs)</div>
+  <div class="card">🔒 Escrow-secured payments (no fraud risk)</div>
+  <div class="card">📊 Real-time campaign tracking & analytics</div>
 </div>
 
-<!-- REGISTER -->
-<div id="register" class="form">
+<!-- SERVICES -->
+<div class="section">
+  <h2>What You Can Do</h2>
 
-<input class="input" id="name" type="text" placeholder="Business Name">
-<input class="input" id="country" type="text" placeholder="Country">
-<input class="input" id="email" type="email" placeholder="Business Email">
-<input class="input" id="phone" type="text" placeholder="Phone Number">
-<input class="input" id="password" type="password" placeholder="Password">
-
-<button class="btn" id="registerBtn" onclick="register()">
-<span class="loader" id="registerLoader"></span>
-<span>Create Account</span>
-</button>
-
+  <div class="grid">
+    <div class="card">📱 Promote Apps & Websites</div>
+    <div class="card">📢 Social Media Growth</div>
+    <div class="card">💻 Hire Freelancers</div>
+    <div class="card">🏢 Post Job Vacancies</div>
+    <div class="card">📣 Influencer Marketing</div>
+    <div class="card">📊 Market Surveys</div>
+  </div>
 </div>
 
-<div id="status" class="status"></div>
+<!-- HOW IT WORKS -->
+<div class="section">
+  <h2>How It Works</h2>
 
-<div class="note">
-Protected with SkillEarn Security System
+  <div class="card">1️⃣ Register your business</div>
+  <div class="card">2️⃣ Verify email (OTP)</div>
+  <div class="card">3️⃣ Get admin approval</div>
+  <div class="card">4️⃣ Fund your campaign</div>
+  <div class="card">5️⃣ Launch & track results</div>
 </div>
 
+<!-- TRUST -->
+<div class="section">
+  <h2>Built for Trust</h2>
+
+  <div class="card">✔ Only verified users complete tasks</div>
+  <div class="card">✔ Fraud detection system active</div>
+  <div class="card">✔ Manual withdrawal control for security</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>© 2026 SkillEarn Business</p>
+  <div>
+    <a href="about.html">About</a> |
+    <a href="faq.html">FAQ</a> |
+    <a href="privacy.html">Privacy</a> |
+    <a href="terms.html">Terms</a>
+  </div>
 </div>
 
 <script>
-
-const API = "https://skillearn.onrender.com";
-
-/* ---------------- UI ---------------- */
-
-function showTab(id,e){
-
-document.querySelectorAll(".form").forEach(x=>{
-x.classList.remove("active");
-});
-
-document.querySelectorAll(".tab").forEach(x=>{
-x.classList.remove("active");
-});
-
-document.getElementById(id).classList.add("active");
-
-if(e){
-e.target.classList.add("active");
+function go(page){
+  window.location.href = page;
 }
-}
-
-function msg(text,type=""){
-const el = document.getElementById("status");
-el.innerText = text;
-el.className = "status " + type;
-}
-
-function setLoading(btn,loader,state){
-document.getElementById(btn).disabled = state;
-document.getElementById(loader).style.display = state ? "block" : "none";
-}
-
-/* ---------------- LOGIN ---------------- */
-
-async function login(){
-
-setLoading("loginBtn","loginLoader",true);
-msg("Logging in...");
-
-try{
-
-const res = await fetch(API + "/api/auth/login",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-email:document.getElementById("loginEmail").value,
-password:document.getElementById("loginPassword").value
-})
-});
-
-const data = await res.json();
-
-if(data.access){
-msg("Login successful","success");
-localStorage.setItem("token",data.access);
-
-setTimeout(()=>{
-window.location.href="business-dashboard.html";
-},1000);
-
-}else{
-msg(data.message || "Login failed","error");
-}
-
-}catch(err){
-console.error(err);
-msg("Server error","error");
-}
-
-setLoading("loginBtn","loginLoader",false);
-}
-
-/* ---------------- REGISTER ---------------- */
-
-async function register(){
-
-setLoading("registerBtn","registerLoader",true);
-msg("Creating account...");
-
-try{
-
-const res = await fetch(API + "/api/auth/register",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-name:document.getElementById("name").value,
-country:document.getElementById("country").value,
-email:document.getElementById("email").value,
-phone:document.getElementById("phone").value,
-password:document.getElementById("password").value
-})
-});
-
-const data = await res.json();
-
-if(data.id){
-msg("Registration successful. Login now.","success");
-}else{
-msg(data.message || "Registration failed","error");
-}
-
-}catch(err){
-console.error(err);
-msg("Server error","error");
-}
-
-setLoading("registerBtn","registerLoader",false);
-}
-
 </script>
 
 </body>
-  </html>
+                                                               </html>
