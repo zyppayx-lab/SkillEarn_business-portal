@@ -3,11 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
 <title>Create Campaign</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
-
 </head>
 
 <body class="bg-slate-100">
@@ -16,11 +13,13 @@
 
 <div
 id="loader"
+
 class="
 hidden
 fixed
 inset-0
 bg-black/10
+z-50
 flex
 items-center
 justify-center">
@@ -35,6 +34,19 @@ border-t-blue-600
 animate-spin">
 </div>
 
+</div>
+
+
+<div
+id="toast"
+
+class="
+hidden
+fixed
+bottom-5
+left-4
+right-4
+z-50">
 </div>
 
 
@@ -57,6 +69,9 @@ localStorage.getItem(
 ));
 
 
+let pricing=null;
+
+
 if(!token){
 
 location=
@@ -65,7 +80,49 @@ location=
 }
 
 
+start();
+
+
+
+async function start(){
+
+await getPricing();
+
 render();
+
+updatePrice();
+
+}
+
+
+
+async function getPricing(){
+
+const res=
+await fetch(
+
+API+
+"/api/business/pricing",
+
+{
+
+headers:{
+
+Authorization:
+"Bearer "+
+token
+
+}
+
+}
+
+);
+
+
+pricing=
+await res.json();
+
+}
 
 
 
@@ -77,31 +134,47 @@ document.getElementById(
 
 <div class="
 p-4
-pb-24">
+pb-20">
+
+<div class="
+mb-6">
 
 <h1 class="
 text-2xl
-font-bold
-mb-6">
+font-bold">
 
 Create Campaign
 
 </h1>
 
+<p class="
+text-slate-500">
+
+Social tasks or jobs
+
+</p>
+
+</div>
+
+
 
 
 <div class="
 bg-white
-rounded-3xl
-p-6
-shadow">
+rounded-[28px]
+shadow-xl
+p-6">
+
 
 
 
 <select
 id="purpose"
 
-onchange="toggleFields()"
+onchange="
+toggleFields();
+updatePrice();
+"
 
 class="
 w-full
@@ -130,6 +203,7 @@ Influencer Job
 
 
 
+
 <input
 id="title"
 
@@ -144,6 +218,7 @@ mb-4">
 
 
 
+
 <textarea
 id="description"
 
@@ -154,16 +229,17 @@ w-full
 border
 p-4
 rounded-2xl
-h-28
-mb-4">
+mb-4
+h-28">
 </textarea>
+
 
 
 
 <input
 id="link"
 
-placeholder="Page / Video / Website Link"
+placeholder="Social link"
 
 class="
 w-full
@@ -171,6 +247,7 @@ border
 p-4
 rounded-2xl
 mb-4">
+
 
 
 
@@ -180,14 +257,43 @@ id="qty"
 value="1"
 type="number"
 
-placeholder="Workers"
+oninput="
+updatePrice()
+"
 
 class="
 w-full
 border
 p-4
 rounded-2xl
+mb-4">
+
+
+
+
+<div class="
+bg-slate-100
+rounded-2xl
+p-5
 mb-5">
+
+<p class="
+text-slate-500">
+
+Amount
+
+</p>
+
+<h1
+id="price"
+
+class="
+text-2xl
+font-bold">
+</h1>
+
+</div>
+
 
 
 
@@ -202,7 +308,7 @@ py-4
 rounded-2xl
 font-bold">
 
-Continue Payment
+Connect Payment
 
 </button>
 
@@ -215,12 +321,13 @@ Continue Payment
 }
 
 
+
 function toggleFields(){
 
 const purpose=
-document.getElementById(
+value(
 "purpose"
-).value;
+);
 
 
 const qty=
@@ -259,6 +366,75 @@ link.style.display=
 
 
 
+function updatePrice(){
+
+const purpose=
+value(
+"purpose"
+);
+
+
+const qty=
+Number(
+value(
+"qty"
+)
+);
+
+
+let amount=0;
+
+
+if(
+purpose==="social"
+){
+
+amount=
+pricing.social.amount*
+qty;
+
+}
+
+
+if(
+purpose==="freelance"
+){
+
+amount=
+pricing.freelance.min;
+
+}
+
+
+if(
+purpose==="hiring"
+){
+
+amount=
+pricing.hiring;
+
+}
+
+
+if(
+purpose==="influencer"
+){
+
+amount=
+pricing.influencer.min;
+
+}
+
+
+document.getElementById(
+"price"
+).innerHTML=
+amount;
+
+}
+
+
+
 async function payNow(){
 
 loader(true);
@@ -267,41 +443,38 @@ loader(true);
 try{
 
 
-const purpose=
-document.getElementById(
-"purpose"
-).value;
-
-
 const payload={
 
 email:
 vendor.email,
 
-purpose,
+purpose:
+value(
+"purpose"
+),
 
 category:
 "default",
 
 title:
-document.getElementById(
+value(
 "title"
-).value,
+),
 
 description:
-document.getElementById(
+value(
 "description"
-).value,
+),
 
 link:
-document.getElementById(
+value(
 "link"
-).value,
+),
 
 qty:
-document.getElementById(
+value(
 "qty"
-).value
+)
 
 };
 
@@ -319,7 +492,8 @@ method:"POST",
 headers:{
 
 Authorization:
-"Bearer "+token,
+"Bearer "+
+token,
 
 "Content-Type":
 "application/json"
@@ -356,10 +530,11 @@ endpoint=
 
 
 
-const pay=
+const res=
 await fetch(
 
-API+endpoint,
+API+
+endpoint,
 
 {
 
@@ -368,7 +543,8 @@ method:"POST",
 headers:{
 
 Authorization:
-"Bearer "+token,
+"Bearer "+
+token,
 
 "Content-Type":
 "application/json"
@@ -386,7 +562,7 @@ payload
 
 
 const data=
-await pay.json();
+await res.json();
 
 
 loader(false);
@@ -405,6 +581,7 @@ return;
 }
 
 
+
 if(
 data.invoice_url
 ){
@@ -417,20 +594,41 @@ return;
 }
 
 
-alert(
+
+toast(
+
+data.message ||
+
 "Payment failed"
+
 );
 
 
-}catch{
+}catch(err){
+
+console.log(
+err
+);
 
 loader(false);
 
-alert(
-"Failed"
+toast(
+"Payment failed"
 );
 
 }
+
+}
+
+
+
+function value(id){
+
+return document
+.getElementById(
+id
+)
+.value;
 
 }
 
@@ -438,32 +636,66 @@ alert(
 
 function loader(show){
 
-const el=
-document.getElementById(
+document
+.getElementById(
 "loader"
-);
+)
+.classList[
 
+show
+? "remove"
+: "add"
 
-if(show){
-
-el.classList.remove(
-"hidden"
-);
-
-}else{
-
-el.classList.add(
+](
 "hidden"
 );
 
 }
 
+
+
+function toast(msg){
+
+const t=
+document.getElementById(
+"toast"
+);
+
+
+t.innerHTML=`
+
+<div class="
+bg-blue-600
+text-white
+p-4
+rounded-2xl
+text-center
+font-semibold">
+
+${msg}
+
+</div>
+
+`;
+
+
+t.classList.remove(
+"hidden"
+);
+
+
+setTimeout(()=>{
+
+t.classList.add(
+"hidden"
+);
+
+},2500);
+
 }
 
-
-toggleFields();
 
 </script>
 
 </body>
-</html>
+  </html>
