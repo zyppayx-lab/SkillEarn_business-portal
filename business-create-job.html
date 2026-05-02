@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Create Campaign</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+body{
+    font-family:sans-serif;
+}
+
+.btn:active{
+    transform:scale(.97);
+}
+
+</style>
+
+</head>
+
+<body class="bg-slate-100">
+
+<div id="app"></div>
+
+
+<div
+id="loader"
+
+class="
+hidden
+fixed
+inset-0
+bg-black/10
+z-50
+flex
+items-center
+justify-center">
+
+<div class="
+w-16
+h-16
+rounded-full
+border-[5px]
+border-blue-100
+border-t-blue-600
+animate-spin
+bg-white">
+</div>
+
+</div>
+
+
+<div
+id="toast"
+
+class="
+hidden
+fixed
+bottom-6
+left-4
+right-4
+z-50">
+</div>
+
+
+
+<script>
+
+const API =
+"https://skillearn.onrender.com";
+
+
+const token =
+localStorage.getItem(
+"business_token"
+);
+
+
+const vendor =
+JSON.parse(
+
+localStorage.getItem(
+"business_user"
+)
+
+);
+
+
+if(
+!token
+){
+
+window.location =
+"business-login.html";
+
+}
+
+
+render();
+
+
+
+
+function currency(){
+
+if(
+vendor.country==="NG"
+){
+return "₦";
+}
+
+return "$";
+
+}
+
+
+
+
+function render(){
+
+document
+.getElementById(
+"app"
+)
+.innerHTML = `
+
+<div class="
+p-4
+pb-20">
+
+
+
+
+<div class="
+mb-6">
+
+<h1 class="
+text-2xl
+font-bold">
+
+Create Campaign
+
+</h1>
+
+
+<p class="
+text-slate-500">
+
+Launch jobs for users
+
+</p>
+
+</div>
+
+
+
+
+
+<div class="
+bg-white
+rounded-[28px]
+shadow-xl
+p-6">
+
+
+
+
+
+<select
+id="purpose"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-4">
+
+<option value="task">
+Micro Task
+</option>
+
+<option value="social">
+Social Media
+</option>
+
+<option value="freelance">
+Freelance
+</option>
+
+<option value="hiring">
+Hiring
+</option>
+
+<option value="influencer">
+Influencer
+</option>
+
+</select>
+
+
+
+
+
+<input
+id="title"
+
+placeholder="Job title"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-4">
+
+
+
+
+
+<textarea
+id="description"
+
+placeholder="Description"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-4
+h-28">
+</textarea>
+
+
+
+
+
+<input
+id="qty"
+
+type="number"
+
+value="1"
+
+placeholder="Workers"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-5">
+
+
+
+
+
+<button
+onclick="payNow()"
+
+class="
+btn
+w-full
+bg-blue-600
+text-white
+py-4
+rounded-2xl
+font-bold">
+
+Continue Payment
+
+</button>
+
+
+
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+
+
+async function payNow(){
+
+showLoader();
+
+
+try{
+
+
+const purpose =
+document
+.getElementById(
+"purpose"
+)
+.value;
+
+
+
+const payload = {
+
+email:
+vendor.email,
+
+purpose,
+
+category:
+"default",
+
+qty:
+document
+.getElementById(
+"qty"
+)
+.value
+
+};
+
+
+
+let endpoint;
+
+
+if(
+vendor.country==="NG"
+){
+
+endpoint =
+"/api/paystack/create-payment";
+
+}
+else{
+
+endpoint =
+"/api/crypto/create-payment";
+
+}
+
+
+
+const res =
+await fetch(
+
+API+
+endpoint,
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":
+"application/json",
+
+Authorization:
+"Bearer "+
+token
+
+},
+
+body:
+JSON.stringify(
+payload
+)
+
+}
+
+);
+
+
+
+const data =
+await res.json();
+
+
+hideLoader();
+
+
+
+if(
+data.payment_url
+){
+
+showToast(
+"Redirecting..."
+);
+
+
+setTimeout(()=>{
+
+window.location =
+data.payment_url;
+
+},800);
+
+return;
+
+}
+
+
+
+if(
+data.invoice_url
+){
+
+showToast(
+"Redirecting..."
+);
+
+
+setTimeout(()=>{
+
+window.location =
+data.invoice_url;
+
+},800);
+
+return;
+
+}
+
+
+
+showToast(
+"Payment created"
+);
+
+
+}catch{
+
+hideLoader();
+
+showToast(
+"Payment failed"
+);
+
+}
+
+}
+
+
+
+
+function showLoader(){
+
+document
+.getElementById(
+"loader"
+)
+.classList
+.remove(
+"hidden"
+);
+
+}
+
+
+
+
+function hideLoader(){
+
+document
+.getElementById(
+"loader"
+)
+.classList
+.add(
+"hidden"
+);
+
+}
+
+
+
+
+function showToast(message){
+
+const toast =
+document
+.getElementById(
+"toast"
+);
+
+
+toast.innerHTML = `
+
+<div class="
+bg-blue-600
+text-white
+p-4
+rounded-2xl
+shadow-xl
+text-center
+font-semibold">
+
+${message}
+
+</div>
+
+`;
+
+
+toast
+.classList
+.remove(
+"hidden"
+);
+
+
+
+setTimeout(()=>{
+
+toast
+.classList
+.add(
+"hidden"
+);
+
+},2500);
+
+}
+
+</script>
+
+</body>
+  </html>
