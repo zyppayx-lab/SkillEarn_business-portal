@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Business Dashboard</title>
+<title>SkillEarn Business</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -15,14 +15,38 @@
 
 const vendor=
 JSON.parse(
-localStorage.getItem("business_user")
-);
+localStorage.getItem(
+"business_user"
+));
 
 if(!vendor){
-location="business-login.html";
+
+location=
+"business-login.html";
+
 }
 
-render();
+
+render({
+
+escrow:0,
+
+social_tasks:0,
+
+freelance_jobs:0,
+
+hiring_jobs:0,
+
+influencer_jobs:0,
+
+pending_submissions:0,
+
+approved_submissions:0,
+
+total_spent:0
+
+});
+
 
 
 function money(){
@@ -34,33 +58,49 @@ return vendor.country==="NG"
 }
 
 
-function render(){
+
+function render(data){
 
 document.getElementById(
 "app"
 ).innerHTML=`
 
-<div class="p-4 pb-24">
+<div class="
+p-4
+pb-28">
 
-<div class="mb-6">
 
-<p class="text-slate-500">
-Welcome
+
+<div class="
+mb-5">
+
+<p class="
+text-slate-500">
+
+Welcome 👋
+
 </p>
 
-<h1 class="text-2xl font-bold">
+<h2 class="
+text-2xl
+font-bold">
+
 ${vendor.business_name}
-</h1>
+
+</h2>
 
 </div>
+
+
 
 
 <div class="
 bg-blue-600
 text-white
-rounded-3xl
+rounded-[28px]
 p-8
-mb-6">
+shadow-xl
+mb-5">
 
 <p>
 Escrow Balance
@@ -71,7 +111,10 @@ text-4xl
 font-bold
 mt-2">
 
-${money()}0
+${money()}
+${Number(
+data.escrow
+).toLocaleString()}
 
 </h1>
 
@@ -79,36 +122,137 @@ ${money()}0
 
 
 
+
 <div class="
 grid
 grid-cols-4
-gap-3">
+gap-3
+mb-6">
 
-${btn(
+${action(
 "➕",
 "Create",
 "business-create-job.html"
 )}
 
-${btn(
+${action(
 "📥",
 "Proofs",
 "business-submissions.html"
 )}
 
-${btn(
+${action(
 "📊",
 "Stats",
 "business-analytics.html"
 )}
 
-${btn(
+${action(
 "👤",
 "Profile",
 "business-profile.html"
 )}
 
 </div>
+
+
+
+
+<div class="
+bg-white
+rounded-[28px]
+p-5
+shadow">
+
+<h2 class="
+font-bold
+mb-4">
+
+Business Overview
+
+</h2>
+
+
+${row(
+"📣",
+"Social Tasks",
+data.social_tasks
+)}
+
+${row(
+"💻",
+"Freelance Jobs",
+data.freelance_jobs
+)}
+
+${row(
+"🧑‍💼",
+"Hiring Jobs",
+data.hiring_jobs
+)}
+
+${row(
+"⭐",
+"Influencer Jobs",
+data.influencer_jobs
+)}
+
+${row(
+"📥",
+"Pending Proofs",
+data.pending_submissions
+)}
+
+${row(
+"✅",
+"Approved",
+data.approved_submissions
+)}
+
+${row(
+"💰",
+"Spent",
+money()+data.total_spent
+)}
+
+</div>
+
+</div>
+
+
+
+
+<div class="
+fixed
+bottom-0
+left-0
+right-0
+bg-white
+border-t
+grid
+grid-cols-4
+p-3
+text-center">
+
+${nav(
+"🏠",
+"business-dashboard.html"
+)}
+
+${nav(
+"➕",
+"business-create-job.html"
+)}
+
+${nav(
+"📥",
+"business-submissions.html"
+)}
+
+${nav(
+"👤",
+"business-profile.html"
+)}
 
 </div>
 
@@ -117,31 +261,99 @@ ${btn(
 }
 
 
-function btn(
+
+function action(
 icon,
-text,
-link
+name,
+page
 ){
 
 return `
 
 <a
-href="${link}"
+href="${page}"
 
 class="
 bg-white
-p-4
 rounded-3xl
-text-center
-shadow">
+shadow
+p-4
+text-center">
 
 <div class="text-2xl">
 ${icon}
 </div>
 
-<div class="text-sm mt-1">
-${text}
+<div class="
+text-sm
+font-semibold">
+
+${name}
+
 </div>
+
+</a>
+
+`;
+
+}
+
+
+
+function row(
+icon,
+name,
+value
+){
+
+return `
+
+<div class="
+flex
+justify-between
+items-center
+mb-4">
+
+<div class="
+flex
+gap-3">
+
+<span>
+${icon}
+</span>
+
+<span>
+${name}
+</span>
+
+</div>
+
+<b>
+${value}
+</b>
+
+</div>
+
+`;
+
+}
+
+
+
+function nav(
+icon,
+page
+){
+
+return `
+
+<a
+href="${page}"
+
+class="
+text-2xl">
+
+${icon}
 
 </a>
 
@@ -152,4 +364,4 @@ ${text}
 </script>
 
 </body>
-</html>
+  </html>
