@@ -11,7 +11,43 @@
 
 <div id="app"></div>
 
+
+<div
+id="loader"
+
+class="
+fixed
+inset-0
+bg-black/10
+z-50
+flex
+items-center
+justify-center">
+
+<div class="
+w-16
+h-16
+rounded-full
+border-[5px]
+border-blue-100
+border-t-blue-600
+animate-spin">
+</div>
+
+</div>
+
+
 <script>
+
+const API=
+"https://skillearn.onrender.com";
+
+
+const token=
+localStorage.getItem(
+"business_token"
+);
+
 
 const vendor=
 JSON.parse(
@@ -19,7 +55,11 @@ localStorage.getItem(
 "business_user"
 ));
 
-if(!vendor){
+
+if(
+!token ||
+!vendor
+){
 
 location=
 "business-login.html";
@@ -27,25 +67,7 @@ location=
 }
 
 
-render({
-
-escrow:0,
-
-social_tasks:0,
-
-freelance_jobs:0,
-
-hiring_jobs:0,
-
-influencer_jobs:0,
-
-pending_submissions:0,
-
-approved_submissions:0,
-
-total_spent:0
-
-});
+load();
 
 
 
@@ -54,6 +76,63 @@ function money(){
 return vendor.country==="NG"
 ? "₦"
 : "$";
+
+}
+
+
+
+async function load(){
+
+try{
+
+
+const res=
+await fetch(
+
+API+
+"/api/business/dashboard",
+
+{
+
+headers:{
+
+Authorization:
+"Bearer "+
+token
+
+}
+
+}
+
+);
+
+
+const data=
+await res.json();
+
+
+document
+.getElementById(
+"loader"
+)
+.remove();
+
+
+render(
+data
+);
+
+
+}catch(err){
+
+console.log(
+err
+);
+
+location=
+"business-login.html";
+
+}
 
 }
 
@@ -142,15 +221,15 @@ ${action(
 )}
 
 ${action(
-"📊",
-"Stats",
-"business-analytics.html"
+"🔔",
+"Alerts",
+"business-notifications.html"
 )}
 
 ${action(
-"👤",
-"Profile",
-"business-profile.html"
+"💳",
+"Payments",
+"business-payments.html"
 )}
 
 </div>
@@ -162,7 +241,8 @@ ${action(
 bg-white
 rounded-[28px]
 p-5
-shadow">
+shadow
+mb-5">
 
 <h2 class="
 font-bold
@@ -217,6 +297,53 @@ money()+data.total_spent
 
 </div>
 
+
+
+
+<div class="
+bg-white
+rounded-[28px]
+p-5
+shadow
+mb-5">
+
+<h2 class="
+font-bold
+mb-4">
+
+Recent Notifications
+
+</h2>
+
+${notifications(
+data.notifications || []
+)}
+
+</div>
+
+
+
+
+<div class="
+bg-white
+rounded-[28px]
+p-5
+shadow">
+
+<h2 class="
+font-bold
+mb-4">
+
+Recent Payments
+
+</h2>
+
+${payments(
+data.payments || []
+)}
+
+</div>
+
 </div>
 
 
@@ -257,6 +384,71 @@ ${nav(
 </div>
 
 `;
+
+}
+
+
+
+function payments(list){
+
+if(!list.length){
+
+return `
+<p class="text-slate-400">
+No payments
+</p>
+`;
+
+}
+
+
+return list.map(x=>`
+
+<div class="
+flex
+justify-between
+mb-3">
+
+<span>
+${x.reference}
+</span>
+
+<b>
+${money()}
+${x.amount}
+</b>
+
+</div>
+
+`).join("");
+
+}
+
+
+
+function notifications(list){
+
+if(!list.length){
+
+return `
+<p class="text-slate-400">
+No notifications
+</p>
+`;
+
+}
+
+
+return list.map(x=>`
+
+<div class="
+mb-3">
+
+${x.message}
+
+</div>
+
+`).join("");
 
 }
 
