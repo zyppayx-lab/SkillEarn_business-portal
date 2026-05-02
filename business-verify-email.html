@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Verify Business Email</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+body{
+    font-family:sans-serif;
+}
+
+.btn:active{
+    transform:scale(.97);
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.card{
+    animation:fadeIn .35s ease;
+}
+
+</style>
+
+</head>
+
+<body class="bg-slate-100">
+
+<div id="app"></div>
+
+
+<div id="loader"
+class="hidden fixed inset-0 bg-black/10 z-50 flex items-center justify-center">
+
+    <div class="
+        w-16
+        h-16
+        rounded-full
+        border-[5px]
+        border-blue-100
+        border-t-blue-600
+        bg-white
+        animate-spin
+        shadow-xl">
+    </div>
+
+</div>
+
+
+<div id="toast"
+class="hidden fixed bottom-6 left-4 right-4 z-50">
+</div>
+
+
+<script>
+
+const API =
+"https://skillearn.onrender.com";
+
+
+const email =
+localStorage.getItem(
+"business_email"
+) || "";
+
+
+
+render();
+
+
+
+function render(){
+
+document.getElementById(
+"app"
+).innerHTML=`
+
+<div class="
+min-h-screen
+flex
+items-center
+justify-center
+p-4">
+
+<div class="
+w-full
+max-w-md
+card">
+
+
+
+<div class="
+text-center
+mb-8">
+
+<div class="
+w-20
+h-20
+rounded-full
+bg-blue-600
+mx-auto
+mb-4
+flex
+items-center
+justify-center
+text-white
+text-3xl
+font-bold
+shadow-xl">
+
+✓
+
+</div>
+
+<h1 class="
+text-3xl
+font-bold">
+
+Email Verification
+
+</h1>
+
+<p class="
+text-slate-500
+mt-2">
+
+Enter your OTP code
+
+</p>
+
+</div>
+
+
+
+
+
+<div class="
+bg-white
+rounded-[28px]
+shadow-xl
+p-6">
+
+
+
+<input
+id="email"
+value="${email}"
+
+readonly
+
+class="
+w-full
+border
+bg-slate-50
+p-4
+rounded-2xl
+mb-4">
+
+
+
+<input
+id="otp"
+
+maxlength="6"
+
+placeholder="6 digit OTP"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-5
+text-center
+text-2xl
+tracking-[8px]">
+
+
+
+<button
+onclick="verifyOTP()"
+
+class="
+btn
+w-full
+bg-blue-600
+text-white
+py-4
+rounded-2xl
+font-bold">
+
+Verify Email
+
+</button>
+
+
+
+
+<div class="
+text-center
+mt-5">
+
+<a
+href="business-register.html"
+
+class="
+text-blue-600
+font-semibold">
+
+Back to register
+
+</a>
+
+</div>
+
+
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+
+
+async function verifyOTP(){
+
+showLoader();
+
+
+try{
+
+
+const res =
+await fetch(
+
+API+
+"/api/business/verify-email",
+
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:
+document.getElementById(
+"email"
+).value,
+
+otp:
+document.getElementById(
+"otp"
+).value
+
+})
+
+}
+
+);
+
+
+
+const data =
+await res.json();
+
+
+hideLoader();
+
+
+showToast(
+data.message
+);
+
+
+
+if(
+data.message.includes(
+"Email verified"
+)
+){
+
+setTimeout(()=>{
+
+window.location =
+"business-login.html";
+
+},1500);
+
+}
+
+
+}catch{
+
+hideLoader();
+
+showToast(
+"Connection failed"
+);
+
+}
+
+}
+
+
+
+function showLoader(){
+
+document
+.getElementById(
+"loader"
+)
+.classList
+.remove(
+"hidden"
+);
+
+}
+
+
+
+function hideLoader(){
+
+document
+.getElementById(
+"loader"
+)
+.classList
+.add(
+"hidden"
+);
+
+}
+
+
+
+function showToast(message){
+
+const toast =
+document.getElementById(
+"toast"
+);
+
+
+toast.innerHTML=`
+
+<div class="
+bg-blue-600
+text-white
+p-4
+rounded-2xl
+shadow-xl
+text-center
+font-semibold">
+
+${message}
+
+</div>
+
+`;
+
+
+toast.classList.remove(
+"hidden"
+);
+
+
+setTimeout(()=>{
+
+toast.classList.add(
+"hidden"
+);
+
+},2500);
+
+}
+
+</script>
+
+</body>
+</html>
