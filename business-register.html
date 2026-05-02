@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkillEarn Business Portal</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+body{
+    font-family:sans-serif;
+}
+
+.card{
+    animation:fade .35s ease;
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.btn:active{
+    transform:scale(.97);
+}
+
+</style>
+
+</head>
+
+<body class="bg-slate-100">
+
+<div id="app"></div>
+
+
+<div id="loader"
+class="hidden fixed inset-0 bg-black/10 z-50 flex items-center justify-center">
+
+    <div class="
+        w-16
+        h-16
+        rounded-full
+        border-[5px]
+        border-blue-100
+        border-t-blue-600
+        bg-white
+        animate-spin
+        shadow-xl">
+    </div>
+
+</div>
+
+
+<div id="toast"
+class="hidden fixed bottom-6 left-4 right-4 z-50">
+</div>
+
+
+<script>
+
+const API =
+"https://skillearn.onrender.com";
+
+
+render();
+
+
+
+function render(){
+
+document.getElementById("app").innerHTML=`
+
+<div class="
+min-h-screen
+flex
+items-center
+justify-center
+p-4">
+
+<div class="
+w-full
+max-w-md
+card">
+
+
+
+
+<div class="
+text-center
+mb-8">
+
+<div class="
+w-20
+h-20
+rounded-full
+bg-blue-600
+mx-auto
+mb-4
+flex
+items-center
+justify-center
+text-white
+text-3xl
+font-bold
+shadow-xl">
+
+S
+
+</div>
+
+<h1 class="
+text-3xl
+font-bold">
+
+Business Portal
+
+</h1>
+
+<p class="
+text-slate-500
+mt-2">
+
+Create vendor account
+
+</p>
+
+</div>
+
+
+
+
+<div class="
+bg-white
+rounded-[28px]
+p-6
+shadow-xl">
+
+
+
+
+<input
+id="business_name"
+placeholder="Business name"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-4">
+
+
+
+
+<input
+id="email"
+type="email"
+placeholder="Business email"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-4">
+
+
+
+
+<input
+id="password"
+type="password"
+placeholder="Password"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-4">
+
+
+
+
+<select
+id="country"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-5">
+
+<option value="NG">Nigeria</option>
+<option value="US">United States</option>
+<option value="GB">United Kingdom</option>
+<option value="CA">Canada</option>
+<option value="KE">Kenya</option>
+<option value="ZA">South Africa</option>
+<option value="IN">India</option>
+<option value="AU">Australia</option>
+<option value="DE">Germany</option>
+<option value="FR">France</option>
+
+</select>
+
+
+
+
+<button
+onclick="registerVendor()"
+
+class="
+btn
+w-full
+bg-blue-600
+text-white
+py-4
+rounded-2xl
+font-bold">
+
+Create Business Account
+
+</button>
+
+
+
+
+<div class="
+text-center
+mt-5">
+
+<a
+href="business-login.html"
+
+class="
+text-blue-600
+font-semibold">
+
+Already have an account? Login
+
+</a>
+
+</div>
+
+
+
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+
+async function registerVendor(){
+
+showLoader();
+
+
+try{
+
+const res =
+await fetch(
+
+API+
+"/api/business/register",
+
+{
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+business_name:
+document.getElementById(
+"business_name"
+).value,
+
+email:
+document.getElementById(
+"email"
+).value,
+
+password:
+document.getElementById(
+"password"
+).value,
+
+country:
+document.getElementById(
+"country"
+).value
+
+})
+
+}
+
+);
+
+
+const data =
+await res.json();
+
+
+hideLoader();
+
+
+showToast(
+data.message
+);
+
+
+if(
+data.message==="OTP sent"
+){
+
+localStorage.setItem(
+
+"business_email",
+
+document.getElementById(
+"email"
+).value
+
+);
+
+
+setTimeout(()=>{
+
+window.location=
+"business-verify-email.html";
+
+},1200);
+
+}
+
+
+}catch{
+
+hideLoader();
+
+showToast(
+"Connection failed"
+);
+
+}
+
+}
+
+
+
+function showLoader(){
+
+document
+.getElementById(
+"loader"
+)
+.classList
+.remove(
+"hidden"
+);
+
+}
+
+
+
+function hideLoader(){
+
+document
+.getElementById(
+"loader"
+)
+.classList
+.add(
+"hidden"
+);
+
+}
+
+
+
+function showToast(message){
+
+const toast =
+document.getElementById(
+"toast"
+);
+
+
+toast.innerHTML=`
+
+<div class="
+bg-blue-600
+text-white
+p-4
+rounded-2xl
+shadow-xl
+text-center
+font-semibold">
+
+${message}
+
+</div>
+
+`;
+
+
+toast.classList.remove(
+"hidden"
+);
+
+
+setTimeout(()=>{
+
+toast.classList.add(
+"hidden"
+);
+
+},2500);
+
+}
+
+</script>
+
+</body>
+</html>
