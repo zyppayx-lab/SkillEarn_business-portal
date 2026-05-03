@@ -11,7 +11,36 @@
 
 <div id="app"></div>
 
+
+<div
+id="loader"
+class="
+fixed
+inset-0
+bg-black/10
+z-50
+flex
+items-center
+justify-center">
+
+<div class="
+w-16
+h-16
+rounded-full
+border-[5px]
+border-blue-100
+border-t-blue-600
+animate-spin
+bg-white">
+</div>
+
+</div>
+
+
 <script>
+
+"use strict";
+
 
 const API =
 "https://skillearn.onrender.com";
@@ -21,6 +50,7 @@ const token =
 localStorage.getItem(
 "business_token"
 );
+
 
 if(!token){
 
@@ -34,7 +64,10 @@ load();
 
 
 
+
 async function load(){
+
+try{
 
 const res =
 await fetch(
@@ -57,19 +90,54 @@ token
 );
 
 
-const items =
+let items =
 await res.json();
+
+
+if(
+!Array.isArray(
+items
+)
+){
+items=[];
+}
+
+
+document
+.getElementById(
+"loader"
+)
+.style.display =
+"none";
 
 
 render(
 items
 );
 
+
+}catch{
+
+document
+.getElementById(
+"loader"
+)
+.style.display =
+"none";
+
+
+render([]);
+
+}
+
 }
 
 
 
-function render(items){
+
+function render(
+items
+){
 
 document
 .getElementById(
@@ -79,55 +147,88 @@ document
 
 <div class="
 p-4
-pb-20">
+pb-28">
 
 <h1 class="
 text-2xl
 font-bold
 mb-5">
 
-Proofs
+Submissions
 
 </h1>
 
+
+
 ${
+
+items.length
+
+?
+
 items.map(
+
 item=>`
 
 <div class="
 bg-white
-rounded-3xl
+rounded-[28px]
 shadow
 p-5
 mb-4">
 
-<p>
-${item.user_name}
-</p>
+<div class="
+font-bold
+text-lg
+mb-2">
 
-<p>
-${item.task_title}
-</p>
+${item.user_name||"User"}
 
-<p>
-${item.proof}
-</p>
+</div>
+
+
+
+<div class="
+text-slate-500
+mb-3">
+
+${item.task_title||"Campaign"}
+
+</div>
+
+
+
+<div class="
+bg-slate-100
+rounded-2xl
+p-4
+mb-4
+break-all">
+
+${item.proof||"No proof"}
+
+</div>
+
+
 
 <button
 
 onclick="
 approve(
-${item.id}
+
+${item.id},
+
+'${item.job_type}'
+
 )
 "
 
 class="
+w-full
 bg-blue-600
 text-white
-px-5
-py-2
-rounded-xl
-mt-4">
+py-3
+rounded-2xl">
 
 Approve
 
@@ -136,8 +237,51 @@ Approve
 </div>
 
 `
+
 ).join("")
+
+:
+
+`
+
+<div class="
+bg-white
+rounded-[28px]
+p-6
+text-center">
+
+No submissions yet
+
+</div>
+
+`
+
 }
+
+</div>
+
+
+
+
+<div class="
+fixed
+bottom-0
+left-0
+right-0
+bg-white
+border-t
+grid
+grid-cols-4
+p-3
+text-center">
+
+<a href="business-dashboard.html" class="text-2xl">🏠</a>
+
+<a href="business-create-job.html" class="text-2xl">➕</a>
+
+<a href="business-submissions.html" class="text-2xl">📥</a>
+
+<a href="business-profile.html" class="text-2xl">👤</a>
 
 </div>
 
@@ -147,12 +291,70 @@ Approve
 
 
 
-async function approve(id){
+
+async function approve(
+id,
+type
+){
+
+let endpoint =
+"/api/business/approve-submission";
+
+
+let key =
+"submission_id";
+
+
+
+if(
+type==="freelance"
+){
+
+endpoint =
+"/api/business/approve-freelance";
+
+
+key =
+"application_id";
+
+}
+
+
+
+if(
+type==="hiring"
+){
+
+endpoint =
+"/api/business/approve-hiring";
+
+
+key =
+"application_id";
+
+}
+
+
+
+if(
+type==="influencer"
+){
+
+endpoint =
+"/api/business/approve-influencer";
+
+
+key =
+"application_id";
+
+}
+
+
 
 await fetch(
 
 API+
-"/api/business/approve-submission",
+endpoint,
 
 {
 
@@ -172,7 +374,7 @@ token,
 body:
 JSON.stringify({
 
-submission_id:id
+[key]:id
 
 })
 
@@ -188,4 +390,4 @@ load();
 </script>
 
 </body>
-</html>
+  </html>
