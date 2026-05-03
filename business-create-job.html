@@ -11,6 +11,7 @@
 
 <div id="app"></div>
 
+
 <div
 id="loader"
 
@@ -37,6 +38,7 @@ animate-spin">
 </div>
 
 
+
 <div
 id="toast"
 
@@ -50,41 +52,53 @@ z-50">
 </div>
 
 
+
 <script>
 
-const API=
+"use strict";
+
+
+const API =
 "https://skillearn.onrender.com";
 
 
-const token=
+const token =
 localStorage.getItem(
 "business_token"
 );
 
 
-const vendor=
+const vendor =
 JSON.parse(
+
 localStorage.getItem(
 "business_user"
-));
+) || "{}"
+
+);
 
 
-let pricing=null;
+let pricing = null;
+
 
 
 if(!token){
 
-location=
+location =
 "business-login.html";
 
 }
+
 
 
 start();
 
 
 
+
 async function start(){
+
+try{
 
 await getPricing();
 
@@ -92,16 +106,24 @@ render();
 
 updatePrice();
 
+}catch{
+
+location =
+"business-dashboard.html";
+
 }
+
+}
+
 
 
 
 async function getPricing(){
 
-const res=
+const res =
 await fetch(
 
-API+
+API +
 "/api/business/pricing",
 
 {
@@ -109,7 +131,7 @@ API+
 headers:{
 
 Authorization:
-"Bearer "+
+"Bearer " +
 token
 
 }
@@ -119,10 +141,13 @@ token
 );
 
 
-pricing=
+pricing =
 await res.json();
 
 }
+
+
+
 
 
 
@@ -130,11 +155,14 @@ function render(){
 
 document.getElementById(
 "app"
-).innerHTML=`
+).innerHTML = `
 
 <div class="
 p-4
 pb-20">
+
+
+
 
 <div class="
 mb-6">
@@ -147,6 +175,8 @@ Create Campaign
 
 </h1>
 
+
+
 <p class="
 text-slate-500">
 
@@ -155,6 +185,7 @@ Social tasks or jobs
 </p>
 
 </div>
+
 
 
 
@@ -257,6 +288,8 @@ id="qty"
 value="1"
 type="number"
 
+min="1"
+
 oninput="
 updatePrice()
 "
@@ -290,6 +323,7 @@ id="price"
 class="
 text-2xl
 font-bold">
+0
 </h1>
 
 </div>
@@ -312,6 +346,9 @@ Connect Payment
 
 </button>
 
+
+
+
 </div>
 
 </div>
@@ -322,116 +359,153 @@ Connect Payment
 
 
 
+
+
+
 function toggleFields(){
 
-const purpose=
+const purpose =
 value(
 "purpose"
 );
 
 
-const qty=
+const qty =
 document.getElementById(
 "qty"
 );
 
 
-const link=
+const link =
 document.getElementById(
 "link"
 );
 
 
+
+
 if(
 purpose==="social"
 ){
 
-qty.style.display=
+qty.style.display =
 "block";
 
-link.style.display=
+link.style.display =
 "block";
 
-}else{
+}
 
-qty.style.display=
+else{
+
+qty.style.display =
 "none";
 
-link.style.display=
+link.style.display =
 "none";
 
 }
 
 }
+
+
+
 
 
 
 function updatePrice(){
 
-const purpose=
+if(!pricing){
+return;
+}
+
+
+const purpose =
 value(
 "purpose"
 );
 
 
-const qty=
+const qty =
 Number(
+
 value(
 "qty"
-)
+) || 1
+
 );
 
 
-let amount=0;
+let amount = 0;
+
+
 
 
 if(
 purpose==="social"
 ){
 
-amount=
-pricing.social.amount*
-qty;
+amount =
+Number(
+pricing.social?.amount || 0
+) * qty;
 
 }
+
+
 
 
 if(
 purpose==="freelance"
 ){
 
-amount=
-pricing.freelance.min;
+amount =
+Number(
+pricing.freelance?.min || 0
+);
 
 }
+
+
 
 
 if(
 purpose==="hiring"
 ){
 
-amount=
-pricing.hiring;
+amount =
+Number(
+pricing.hiring || 0
+);
 
 }
+
+
 
 
 if(
 purpose==="influencer"
 ){
 
-amount=
-pricing.influencer.min;
+amount =
+Number(
+pricing.influencer?.min || 0
+);
 
 }
+
+
 
 
 document.getElementById(
 "price"
-).innerHTML=
-amount;
+).innerHTML =
+amount.toLocaleString();
 
 }
+
+
+
 
 
 
@@ -443,10 +517,22 @@ loader(true);
 try{
 
 
-const payload={
+const payload = {
+
+business_id:
+vendor.id,
+
+vendor_id:
+vendor.id,
 
 email:
 vendor.email,
+
+business_email:
+vendor.email,
+
+business_name:
+vendor.business_name,
 
 purpose:
 value(
@@ -472,17 +558,23 @@ value(
 ),
 
 qty:
+Number(
+
 value(
 "qty"
+) || 1
+
 )
 
 };
 
 
 
+
+
 await fetch(
 
-API+
+API +
 "/api/business/create-campaign",
 
 {
@@ -492,7 +584,7 @@ method:"POST",
 headers:{
 
 Authorization:
-"Bearer "+
+"Bearer " +
 token,
 
 "Content-Type":
@@ -511,29 +603,37 @@ payload
 
 
 
+
+
 let endpoint;
+
+
 
 
 if(
 vendor.country==="NG"
 ){
 
-endpoint=
+endpoint =
 "/api/paystack/create-payment";
 
-}else{
+}
 
-endpoint=
+else{
+
+endpoint =
 "/api/crypto/create-payment";
 
 }
 
 
 
-const res=
+
+
+const res =
 await fetch(
 
-API+
+API +
 endpoint,
 
 {
@@ -543,7 +643,7 @@ method:"POST",
 headers:{
 
 Authorization:
-"Bearer "+
+"Bearer " +
 token,
 
 "Content-Type":
@@ -561,11 +661,19 @@ payload
 );
 
 
-const data=
+
+
+
+const data =
 await res.json();
 
 
+
+
+
 loader(false);
+
+
 
 
 
@@ -573,7 +681,7 @@ if(
 data.payment_url
 ){
 
-location=
+location =
 data.payment_url;
 
 return;
@@ -582,16 +690,20 @@ return;
 
 
 
+
+
 if(
 data.invoice_url
 ){
 
-location=
+location =
 data.invoice_url;
 
 return;
 
 }
+
+
 
 
 
@@ -604,13 +716,16 @@ data.message ||
 );
 
 
-}catch(err){
+
+}catch(error){
 
 console.log(
-err
+error
 );
 
+
 loader(false);
+
 
 toast(
 "Payment failed"
@@ -622,15 +737,20 @@ toast(
 
 
 
+
+
+
 function value(id){
 
 return document
 .getElementById(
 id
-)
-.value;
+).value;
 
 }
+
+
+
 
 
 
@@ -654,15 +774,20 @@ show
 
 
 
+
+
+
 function toast(msg){
 
-const t=
+const t =
 document.getElementById(
 "toast"
 );
 
 
-t.innerHTML=`
+
+
+t.innerHTML = `
 
 <div class="
 bg-blue-600
@@ -679,9 +804,13 @@ ${msg}
 `;
 
 
+
+
 t.classList.remove(
 "hidden"
 );
+
+
 
 
 setTimeout(()=>{
@@ -693,7 +822,6 @@ t.classList.add(
 },2500);
 
 }
-
 
 </script>
 
