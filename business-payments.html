@@ -11,10 +11,41 @@
 
 <div id="app"></div>
 
+
+<div id="loader"
+class="
+fixed
+inset-0
+bg-black/10
+z-50
+flex
+items-center
+justify-center">
+
+<div class="
+w-16 h-16 rounded-full border-[5px]
+border-blue-100 border-t-blue-600
+animate-spin bg-white"></div>
+
+</div>
+
+
+
 <script>
 
-const API =
-"https://skillearn.onrender.com";
+"use strict";
+
+
+const app =
+document.getElementById(
+"app"
+);
+
+
+const loader =
+document.getElementById(
+"loader"
+);
 
 
 const token =
@@ -25,9 +56,13 @@ localStorage.getItem(
 
 const vendor =
 JSON.parse(
+
 localStorage.getItem(
 "business_user"
-));
+) || "{}"
+
+);
+
 
 if(!token){
 
@@ -37,7 +72,9 @@ location =
 }
 
 
+
 load();
+
 
 
 
@@ -51,31 +88,75 @@ return vendor.country==="NG"
 
 
 
-async function load(){
 
-const res =
-await fetch(
 
-API+
-"/api/business/payments",
+
+function load(){
+
+fetch(
+
+"https://skillearn.onrender.com/api/business/payments",
 
 {
 
 headers:{
 
 Authorization:
-"Bearer "+
-token
+"Bearer "+token
 
 }
 
 }
 
-);
+)
 
+.then(
 
-const items =
+async res=>{
+
+let items =
 await res.json();
+
+
+
+if(
+    Array.isArray(
+        items
+    )
+){}
+
+else if(
+    Array.isArray(
+        items.payments
+    )
+){
+
+items =
+items.payments;
+
+}
+
+else if(
+    Array.isArray(
+        items.data
+    )
+){
+
+items =
+items.data;
+
+}
+
+else{
+
+items = [];
+
+}
+
+
+
+loader.remove();
+
 
 
 render(
@@ -84,19 +165,156 @@ items
 
 }
 
-
-
-function render(items){
-
-document
-.getElementById(
-"app"
 )
-.innerHTML = `
+
+.catch(
+
+()=>{
+
+loader.remove();
+
+
+
+render([]);
+
+}
+
+);
+
+}
+
+
+
+
+
+
+function render(
+items
+){
+
+let html =
+"";
+
+
+
+if(
+items.length===0
+){
+
+html = `
+
+<div class="
+bg-white
+rounded-[28px]
+p-6
+text-center
+shadow">
+
+No payments yet
+
+</div>
+
+`;
+
+}
+
+else{
+
+for(
+
+let item of items
+
+){
+
+html += `
+
+<div class="
+bg-white
+rounded-[28px]
+shadow
+p-5
+mb-4">
+
+
+
+
+<p class="
+font-semibold
+mb-2">
+
+${item.purpose || "Payment"}
+
+</p>
+
+
+
+
+<p class="
+text-blue-600
+font-bold
+mb-2">
+
+${money()}
+${Number(
+item.amount || 0
+).toLocaleString()}
+
+</p>
+
+
+
+
+<p class="
+text-slate-500
+mb-1">
+
+${item.method || "Method"}
+
+</p>
+
+
+
+
+<p class="
+text-slate-500
+mb-1">
+
+${item.reference || "Reference"}
+
+</p>
+
+
+
+
+<p class="
+text-green-600
+font-semibold">
+
+${item.status || "Completed"}
+
+</p>
+
+
+
+
+</div>
+
+`;
+
+}
+
+}
+
+
+
+app.innerHTML = `
 
 <div class="
 p-4
-pb-20">
+pb-28">
+
+
+
 
 <h1 class="
 text-2xl
@@ -107,39 +325,56 @@ Payments
 
 </h1>
 
-${
-items.map(
-item=>`
 
-<div class="
-bg-white
-rounded-3xl
-shadow
-p-5
-mb-4">
 
-<p>
-${item.purpose}
-</p>
 
-<p>
-${money()}
-${item.amount}
-</p>
+<button
 
-<p>
-${item.method}
-</p>
+onclick="
+location.reload()
+"
 
-<p>
-${item.reference}
-</p>
+class="
+w-full
+bg-blue-600
+text-white
+py-3
+rounded-2xl
+mb-5">
+
+Refresh Escrow
+
+</button>
+
+
+
+
+${html}
+
+
+
 
 </div>
 
-`
-).join("")
-}
+
+
+
+<div class="
+fixed
+bottom-0
+left-0
+right-0
+bg-white
+border-t
+grid
+grid-cols-4
+p-3
+text-center">
+
+<a href="business-dashboard.html" class="text-2xl">🏠</a>
+<a href="business-create-job.html" class="text-2xl">➕</a>
+<a href="business-notifications.html" class="text-2xl">🔔</a>
+<a href="business-profile.html" class="text-2xl">👤</a>
 
 </div>
 
@@ -150,4 +385,4 @@ ${item.reference}
 </script>
 
 </body>
-</html>
+  </html>
