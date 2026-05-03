@@ -11,137 +11,227 @@
 
 <div id="app"></div>
 
+<div
+id="loader"
+class="
+fixed
+inset-0
+flex
+items-center
+justify-center
+bg-black/10
+">
+
+Loading...
+
+</div>
+
+
+
 <script>
+
+"use strict";
+
 
 const API =
 "https://skillearn.onrender.com";
 
+
 const token =
 localStorage.getItem(
-"business_token"
+    "business_token"
 );
+
 
 if(!token){
 
-location =
-"business-login.html";
-
-}
-
-load();
-
-
-
-async function load(){
-
-try{
-
-const res =
-await fetch(
-
-API+
-"/api/business/notifications",
-
-{
-
-headers:{
-
-Authorization:
-"Bearer "+
-token
-
-}
-
-}
-
-);
-
-
-const items =
-await res.json();
-
-
-render(
-items
-);
-
-}catch{
-
-location =
-"business-login.html";
-
-}
+    location =
+    "business-login.html";
 
 }
 
 
 
-function render(items){
+fetch(
 
-document
-.getElementById(
-"app"
+    API+
+    "/api/business/notifications",
+
+    {
+
+        headers:{
+
+            Authorization:
+            "Bearer "+
+            token
+
+        }
+
+    }
+
 )
-.innerHTML = `
 
-<div class="
-p-4
-pb-24">
+.then(
 
-<h1 class="
-text-2xl
-font-bold
-mb-5">
+    async res=>{
 
-Notifications
+        const items =
+        await res.json();
 
-</h1>
 
-${
-items.map(
-item=>`
 
-<div class="
-bg-white
-rounded-3xl
-shadow
-p-5
-mb-4">
+        document
+        .getElementById(
+            "loader"
+        )
+        .remove();
 
-<h3 class="
-font-bold">
 
-${item.title}
 
-</h3>
+        document
+        .getElementById(
+            "app"
+        )
+        .innerHTML = `
 
-<p class="
-text-slate-500
-mt-1">
+            <div class="
+                p-4
+                pb-24
+            ">
 
-${item.message}
+                <h1 class="
+                    text-2xl
+                    font-bold
+                    mb-5
+                ">
 
-</p>
+                    Notifications
 
-<p class="
-text-xs
-mt-2">
+                </h1>
 
-${item.created_at}
 
-</p>
 
-</div>
+                ${
 
-`
-).join("")
-}
+                    Array.isArray(
+                        items
+                    )
 
-</div>
+                    &&
 
-`;
+                    items.length
 
-}
+                    ?
+
+                    items.map(
+
+                        item=>`
+
+                            <div class="
+                                bg-white
+                                rounded-3xl
+                                shadow
+                                p-5
+                                mb-4
+                            ">
+
+                                <h3 class="
+                                    font-bold
+                                ">
+
+                                    ${item.title||"Notification"}
+
+                                </h3>
+
+
+
+                                <p class="
+                                    text-slate-500
+                                    mt-1
+                                ">
+
+                                    ${item.message||""}
+
+                                </p>
+
+
+
+                                <p class="
+                                    text-xs
+                                    mt-2
+                                ">
+
+                                    ${item.created_at||""}
+
+                                </p>
+
+                            </div>
+
+                        `
+
+                    ).join("")
+
+                    :
+
+                    `
+
+                        <div class="
+                            bg-white
+                            rounded-3xl
+                            p-5
+                            text-center
+                        ">
+
+                            No notifications
+
+                        </div>
+
+                    `
+
+                }
+
+            </div>
+
+        `;
+
+    }
+
+)
+
+.catch(
+
+    err=>{
+
+        document
+        .getElementById(
+            "loader"
+        )
+        .remove();
+
+
+
+        document
+        .getElementById(
+            "app"
+        )
+        .innerHTML = `
+
+            <div class="
+                p-5
+                text-red-600
+            ">
+
+                ERROR:
+
+                ${err.message}
+
+            </div>
+
+        `;
+
+    }
+
+);
 
 </script>
 
