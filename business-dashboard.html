@@ -11,37 +11,28 @@
 
 <div id="app"></div>
 
-
-<div
-id="loader"
-
-class="
-fixed
-inset-0
-bg-black/10
-z-50
-flex
-items-center
-justify-center">
+<div id="loader"
+class="fixed inset-0 bg-black/10 z-50 flex items-center justify-center">
 
 <div class="
-w-16
-h-16
-rounded-full
-border-[5px]
-border-blue-100
-border-t-blue-600
-animate-spin
-bg-white">
-</div>
+w-16 h-16 rounded-full border-[5px]
+border-blue-100 border-t-blue-600
+animate-spin bg-white"></div>
 
 </div>
 
 
 <script>
 
-const API =
-"https://skillearn.onrender.com";
+"use strict";
+
+
+const app =
+document.getElementById("app");
+
+
+const loader =
+document.getElementById("loader");
 
 
 const token =
@@ -55,14 +46,12 @@ JSON.parse(
 
 localStorage.getItem(
 "business_user"
+) || "{}"
 
-));
+);
 
 
-if(
-!token ||
-!vendor
-){
+if(!token){
 
 location =
 "business-login.html";
@@ -70,106 +59,66 @@ location =
 }
 
 
-load();
 
+fetch(
 
-
-
-function money(){
-
-return vendor.country==="NG"
-? "₦"
-: "$";
-
-}
-
-
-
-
-async function load(){
-
-try{
-
-const res =
-await fetch(
-
-API+
-"/api/business/dashboard",
+"https://skillearn.onrender.com/api/business/dashboard",
 
 {
 
 headers:{
 
 Authorization:
-"Bearer "+
-token
+"Bearer "+token
 
 }
 
 }
 
-);
+)
 
+.then(
 
-const data =
+async res=>{
+
+let data =
 await res.json();
 
 
-document
-.getElementById(
-"loader"
-)
-.style.display =
-"none";
 
-
-render(
-data
-);
-
-
-}catch{
-
-location =
-"business-login.html";
-
-}
-
-}
+loader.remove();
 
 
 
+const escrow =
 
-function render(data){
+data.escrow ||
 
-document
-.getElementById(
-"app"
-)
-.innerHTML = `
+data.escrow_balance ||
 
-<div class="
-p-4
-pb-28">
+(
+data.wallet &&
+data.wallet.escrow
+) ||
 
+0;
 
 
-<div class="
-mb-5">
 
-<p class="
-text-slate-500">
+app.innerHTML = `
 
+<div class="p-4 pb-28">
+
+
+
+<div class="mb-5">
+
+<p class="text-slate-500">
 Welcome 👋
-
 </p>
 
-<h2 class="
-text-2xl
-font-bold">
-
-${vendor.business_name}
-
+<h2 class="text-2xl font-bold">
+${vendor.business_name || "Business"}
 </h2>
 
 </div>
@@ -194,9 +143,10 @@ text-4xl
 font-bold
 mt-2">
 
-${money()}
+${vendor.country==="NG" ? "₦" : "$"}
+
 ${Number(
-data.escrow || 0
+escrow
 ).toLocaleString()}
 
 </h1>
@@ -212,29 +162,94 @@ grid-cols-4
 gap-3
 mb-6">
 
-${action(
-"➕",
-"Create",
-"business-create-job.html"
-)}
 
-${action(
-"📥",
-"Proofs",
-"business-submissions.html"
-)}
 
-${action(
-"💳",
-"Payments",
-"business-payments.html"
-)}
+<a
+href="business-create-job.html"
+class="
+bg-white
+rounded-3xl
+shadow
+p-4
+text-center">
 
-${action(
-"📊",
-"Analytics",
-"business-analytics.html"
-)}
+<div class="text-2xl">
+➕
+</div>
+
+<div class="text-sm font-semibold">
+Create
+</div>
+
+</a>
+
+
+
+
+<a
+href="business-submissions.html"
+class="
+bg-white
+rounded-3xl
+shadow
+p-4
+text-center">
+
+<div class="text-2xl">
+📥
+</div>
+
+<div class="text-sm font-semibold">
+Proofs
+</div>
+
+</a>
+
+
+
+
+<a
+href="business-payments.html"
+class="
+bg-white
+rounded-3xl
+shadow
+p-4
+text-center">
+
+<div class="text-2xl">
+💳
+</div>
+
+<div class="text-sm font-semibold">
+Payments
+</div>
+
+</a>
+
+
+
+
+<a
+href="business-analytics.html"
+class="
+bg-white
+rounded-3xl
+shadow
+p-4
+text-center">
+
+<div class="text-2xl">
+📊
+</div>
+
+<div class="text-sm font-semibold">
+Analytics
+</div>
+
+</a>
+
+
 
 </div>
 
@@ -247,59 +262,12 @@ rounded-[28px]
 p-5
 shadow">
 
-<h2 class="
-font-bold
-mb-4">
-
-Business Overview
-
-</h2>
-
-
-${row(
-"📣",
-"Social Tasks",
-data.social_tasks || 0
-)}
-
-${row(
-"💻",
-"Freelance Jobs",
-data.freelance_jobs || 0
-)}
-
-${row(
-"🧑‍💼",
-"Hiring Jobs",
-data.hiring_jobs || 0
-)}
-
-${row(
-"⭐",
-"Influencer Jobs",
-data.influencer_jobs || 0
-)}
-
-${row(
-"📥",
-"Pending Proofs",
-data.pending_submissions || 0
-)}
-
-${row(
-"✅",
-"Approved",
-data.approved_submissions || 0
-)}
-
-${row(
-"💰",
-"Spent",
-money()+
-Number(
-data.total_spent || 0
-).toLocaleString()
-)}
+${row("📣","Social Tasks",data.social_tasks||0)}
+${row("💻","Freelance Jobs",data.freelance_jobs||0)}
+${row("🧑‍💼","Hiring Jobs",data.hiring_jobs||0)}
+${row("⭐","Influencer Jobs",data.influencer_jobs||0)}
+${row("📥","Pending Proofs",data.pending_submissions||0)}
+${row("✅","Approved",data.approved_submissions||0)}
 
 </div>
 
@@ -320,25 +288,10 @@ grid-cols-4
 p-3
 text-center">
 
-${nav(
-"🏠",
-"business-dashboard.html"
-)}
-
-${nav(
-"➕",
-"business-create-job.html"
-)}
-
-${nav(
-"🔔",
-"business-notifications.html"
-)}
-
-${nav(
-"👤",
-"business-profile.html"
-)}
+<a href="business-dashboard.html" class="text-2xl">🏠</a>
+<a href="business-create-job.html" class="text-2xl">➕</a>
+<a href="business-notifications.html" class="text-2xl">🔔</a>
+<a href="business-profile.html" class="text-2xl">👤</a>
 
 </div>
 
@@ -346,47 +299,24 @@ ${nav(
 
 }
 
+)
 
+.catch(
 
+()=>{
 
-function action(
-icon,
-name,
-page
-){
+loader.remove();
 
-return `
-
-<a
-href="${page}"
-
-class="
-bg-white
-rounded-3xl
-shadow
-p-4
-text-center">
-
-<div class="
-text-2xl">
-
-${icon}
-
+app.innerHTML = `
+<div class="p-5">
+Could not load dashboard
 </div>
-
-<div class="
-text-sm
-font-semibold">
-
-${name}
-
-</div>
-
-</a>
-
 `;
 
 }
+
+);
+
 
 
 
@@ -408,45 +338,15 @@ mb-4">
 flex
 gap-3">
 
-<span>
-${icon}
-</span>
+<span>${icon}</span>
 
-<span>
-${name}
-</span>
+<span>${name}</span>
 
 </div>
 
-<b>
-${value}
-</b>
+<b>${value}</b>
 
 </div>
-
-`;
-
-}
-
-
-
-
-function nav(
-icon,
-page
-){
-
-return `
-
-<a
-href="${page}"
-
-class="
-text-2xl">
-
-${icon}
-
-</a>
 
 `;
 
