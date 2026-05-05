@@ -77,7 +77,6 @@ localStorage.getItem(
 ) || "";
 
 
-
 render();
 
 
@@ -99,7 +98,6 @@ p-4">
 w-full
 max-w-md
 card">
-
 
 
 <div class="
@@ -144,15 +142,11 @@ Enter your OTP code
 </div>
 
 
-
-
-
 <div class="
 bg-white
 rounded-[28px]
 shadow-xl
 p-6">
-
 
 
 <input
@@ -168,7 +162,6 @@ bg-slate-50
 p-4
 rounded-2xl
 mb-4">
-
 
 
 <input
@@ -189,7 +182,6 @@ text-2xl
 tracking-[8px]">
 
 
-
 <button
 onclick="verifyOTP()"
 
@@ -205,8 +197,6 @@ font-bold">
 Verify Email
 
 </button>
-
-
 
 
 <div class="
@@ -225,8 +215,6 @@ Back to register
 </a>
 
 </div>
-
-
 
 </div>
 
@@ -247,7 +235,6 @@ showLoader();
 
 
 try{
-
 
 const res =
 await fetch(
@@ -273,14 +260,13 @@ document.getElementById(
 otp:
 document.getElementById(
 "otp"
-).value
+).value.trim()
 
 })
 
 }
 
 );
-
 
 
 const data =
@@ -295,11 +281,9 @@ data.message
 );
 
 
-
 if(
-data.message.includes(
-"Email verified"
-)
+res.ok &&
+data.message==="Verified"
 ){
 
 setTimeout(()=>{
@@ -400,4 +384,4 @@ toast.classList.add(
 </script>
 
 </body>
-</html>
+    </html>
