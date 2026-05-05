@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Create Campaign</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -11,19 +12,9 @@
 
 <div id="app"></div>
 
-
 <div
 id="loader"
-
-class="
-hidden
-fixed
-inset-0
-bg-black/10
-z-50
-flex
-items-center
-justify-center">
+class="hidden fixed inset-0 bg-black/10 z-50 flex items-center justify-center">
 
 <div class="
 w-16
@@ -38,83 +29,45 @@ animate-spin">
 </div>
 
 
-
 <div
 id="toast"
-
-class="
-hidden
-fixed
-bottom-5
-left-4
-right-4
-z-50">
+class="hidden fixed bottom-5 left-4 right-4 z-50">
 </div>
-
 
 
 <script>
 
 "use strict";
 
-
 const API =
 "https://skillearn.onrender.com";
-
 
 const token =
 localStorage.getItem(
 "business_token"
 );
 
-
-const vendor =
-JSON.parse(
-
-localStorage.getItem(
-"business_user"
-) || "{}"
-
-);
-
-
-let pricing = null;
-
-
-
 if(!token){
-
 location =
 "business-login.html";
-
 }
 
-
+let pricing = null;
 
 start();
 
 
-
-
 async function start(){
-
-try{
 
 await getPricing();
 
 render();
 
+updateUI();
+
 updatePrice();
 
-}catch{
-
-location =
-"business-dashboard.html";
-
 }
-
-}
-
 
 
 
@@ -127,27 +80,19 @@ API +
 "/api/business/pricing",
 
 {
-
 headers:{
-
 Authorization:
 "Bearer " +
 token
-
 }
-
 }
 
 );
-
 
 pricing =
 await res.json();
 
 }
-
-
-
 
 
 
@@ -157,37 +102,21 @@ document.getElementById(
 "app"
 ).innerHTML = `
 
-<div class="
-p-4
-pb-20">
+<div class="p-4 pb-20">
 
-
-
-
-<div class="
-mb-6">
+<div class="mb-6">
 
 <h1 class="
 text-2xl
 font-bold">
-
 Create Campaign
-
 </h1>
 
-
-
-<p class="
-text-slate-500">
-
+<p class="text-slate-500">
 Social tasks or jobs
-
 </p>
 
 </div>
-
-
-
 
 
 <div class="
@@ -196,14 +125,10 @@ rounded-[28px]
 shadow-xl
 p-6">
 
-
-
-
 <select
 id="purpose"
-
 onchange="
-toggleFields();
+updateUI();
 updatePrice();
 "
 
@@ -234,10 +159,8 @@ Influencer Job
 
 
 
-
 <input
 id="title"
-
 placeholder="Title"
 
 class="
@@ -249,10 +172,8 @@ mb-4">
 
 
 
-
 <textarea
 id="description"
-
 placeholder="Description"
 
 class="
@@ -266,10 +187,8 @@ h-28">
 
 
 
-
 <input
 id="link"
-
 placeholder="Social link"
 
 class="
@@ -281,18 +200,12 @@ mb-4">
 
 
 
-
 <input
 id="qty"
-
-value="1"
 type="number"
-
+value="1"
 min="1"
-
-oninput="
-updatePrice()
-"
+oninput="updatePrice()"
 
 class="
 w-full
@@ -303,6 +216,20 @@ mb-4">
 
 
 
+<input
+id="budget"
+type="number"
+placeholder="Budget"
+oninput="updatePrice()"
+
+class="
+w-full
+border
+p-4
+rounded-2xl
+mb-4">
+
+
 
 <div class="
 bg-slate-100
@@ -310,11 +237,8 @@ rounded-2xl
 p-5
 mb-5">
 
-<p class="
-text-slate-500">
-
+<p class="text-slate-500">
 Amount
-
 </p>
 
 <h1
@@ -330,9 +254,8 @@ font-bold">
 
 
 
-
 <button
-onclick="payNow()"
+onclick="createCampaign()"
 
 class="
 w-full
@@ -342,12 +265,9 @@ py-4
 rounded-2xl
 font-bold">
 
-Connect Payment
+Create
 
 </button>
-
-
-
 
 </div>
 
@@ -359,28 +279,27 @@ Connect Payment
 
 
 
-
-
-
-function toggleFields(){
+function updateUI(){
 
 const purpose =
 value(
 "purpose"
 );
 
+const link =
+document.getElementById(
+"link"
+);
 
 const qty =
 document.getElementById(
 "qty"
 );
 
-
-const link =
+const budget =
 document.getElementById(
-"link"
+"budget"
 );
-
 
 
 
@@ -388,28 +307,31 @@ if(
 purpose==="social"
 ){
 
-qty.style.display =
-"block";
-
 link.style.display =
 "block";
 
-}
-
-else{
-
 qty.style.display =
+"block";
+
+budget.style.display =
 "none";
+
+}else{
 
 link.style.display =
 "none";
 
-}
+qty.style.display =
+"none";
+
+budget.style.display =
+purpose==="hiring"
+? "none"
+: "block";
 
 }
 
-
-
+}
 
 
 
@@ -419,25 +341,12 @@ if(!pricing){
 return;
 }
 
-
 const purpose =
 value(
 "purpose"
 );
 
-
-const qty =
-Number(
-
-value(
-"qty"
-) || 1
-
-);
-
-
 let amount = 0;
-
 
 
 
@@ -446,12 +355,14 @@ purpose==="social"
 ){
 
 amount =
+
+pricing.social.amount *
+
 Number(
-pricing.social?.amount || 0
-) * qty;
+value("qty")
+);
 
 }
-
 
 
 
@@ -461,11 +372,11 @@ purpose==="freelance"
 
 amount =
 Number(
-pricing.freelance?.min || 0
+value("budget")
+|| 0
 );
 
 }
-
 
 
 
@@ -474,12 +385,9 @@ purpose==="hiring"
 ){
 
 amount =
-Number(
-pricing.hiring || 0
-);
+pricing.hiring;
 
 }
-
 
 
 
@@ -489,11 +397,11 @@ purpose==="influencer"
 
 amount =
 Number(
-pricing.influencer?.min || 0
+value("budget")
+|| 0
 );
 
 }
-
 
 
 
@@ -506,41 +414,20 @@ amount.toLocaleString();
 
 
 
-
-
-
-async function payNow(){
+async function createCampaign(){
 
 loader(true);
 
-
 try{
 
-
-const payload = {
-
-business_id:
-vendor.id,
-
-vendor_id:
-vendor.id,
-
-email:
-vendor.email,
-
-business_email:
-vendor.email,
-
-business_name:
-vendor.business_name,
-
-purpose:
+const purpose =
 value(
 "purpose"
-),
+);
 
-category:
-"default",
+let endpoint;
+
+let payload = {
 
 title:
 value(
@@ -550,83 +437,79 @@ value(
 description:
 value(
 "description"
-),
-
-link:
-value(
-"link"
-),
-
-qty:
-Number(
-
-value(
-"qty"
-) || 1
-
 )
 
 };
 
 
 
+if(
+purpose==="social"
+){
 
+endpoint =
+"/api/business/create-social-task";
 
-await fetch(
-
-API +
-"/api/business/create-campaign",
-
-{
-
-method:"POST",
-
-headers:{
-
-Authorization:
-"Bearer " +
-token,
-
-"Content-Type":
-"application/json"
-
-},
-
-body:
-JSON.stringify(
-payload
-)
-
-}
-
+payload.link =
+value(
+"link"
 );
 
+payload.qty =
+Number(
+value(
+"qty"
+)
+);
 
-
-
-
-let endpoint;
-
+}
 
 
 
 if(
-vendor.country==="NG"
+purpose==="freelance"
 ){
 
 endpoint =
-"/api/paystack/create-payment";
+"/api/business/create-freelance";
+
+payload.budget =
+Number(
+value(
+"budget"
+)
+);
 
 }
 
-else{
+
+
+if(
+purpose==="hiring"
+){
 
 endpoint =
-"/api/crypto/create-payment";
+"/api/business/create-hiring";
 
 }
 
 
+
+if(
+purpose==="influencer"
+){
+
+endpoint =
+"/api/business/create-influencer";
+
+payload.budget =
+Number(
+value(
+"budget"
+)
+);
+
+}
 
 
 
@@ -662,95 +545,51 @@ payload
 
 
 
-
-
 const data =
 await res.json();
 
-
-
-
-
 loader(false);
 
-
+toast(
+data.message
+);
 
 
 
 if(
-data.payment_url
+res.ok
 ){
 
-location =
-data.payment_url;
+setTimeout(()=>{
 
-return;
+location =
+"business-dashboard.html";
+
+},1200);
 
 }
 
-
-
-
-
-if(
-data.invoice_url
-){
-
-location =
-data.invoice_url;
-
-return;
-
-}
-
-
-
-
-
-toast(
-
-data.message ||
-
-"Payment failed"
-
-);
-
-
-
-}catch(error){
-
-console.log(
-error
-);
-
+}catch{
 
 loader(false);
 
-
 toast(
-"Payment failed"
+"Connection failed"
 );
 
 }
 
 }
-
-
-
 
 
 
 function value(id){
 
 return document
-.getElementById(
-id
-).value;
+.getElementById(id)
+.value;
 
 }
-
-
-
 
 
 
@@ -774,18 +613,12 @@ show
 
 
 
-
-
-
 function toast(msg){
 
 const t =
 document.getElementById(
 "toast"
 );
-
-
-
 
 t.innerHTML = `
 
@@ -803,15 +636,9 @@ ${msg}
 
 `;
 
-
-
-
 t.classList.remove(
 "hidden"
 );
-
-
-
 
 setTimeout(()=>{
 
@@ -826,4 +653,4 @@ t.classList.add(
 </script>
 
 </body>
-  </html>
+</html>
