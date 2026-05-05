@@ -4,21 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SkillEarn Business</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
 <body class="bg-slate-100">
 
 <div id="app"></div>
 
+
 <div
 id="loader"
 class="fixed inset-0 bg-black/10 z-50 flex items-center justify-center">
 
 <div class="
-w-16 h-16 rounded-full border-[5px]
-border-blue-100 border-t-blue-600
-animate-spin bg-white"></div>
+w-16
+h-16
+rounded-full
+border-[5px]
+border-blue-100
+border-t-blue-600
+animate-spin
+bg-white">
+</div>
 
 </div>
 
@@ -29,11 +38,15 @@ animate-spin bg-white"></div>
 
 
 const app =
-document.getElementById("app");
+document.getElementById(
+"app"
+);
 
 
 const loader =
-document.getElementById("loader");
+document.getElementById(
+"loader"
+);
 
 
 const token =
@@ -46,7 +59,7 @@ const vendor =
 JSON.parse(
 
 localStorage.getItem(
-"business_user"
+"business_vendor"
 ) || "{}"
 
 );
@@ -60,7 +73,19 @@ location =
 }
 
 
-fetch(
+
+loadDashboard();
+
+
+
+
+async function loadDashboard(){
+
+try{
+
+
+const res =
+await fetch(
 
 "https://skillearn.onrender.com/api/business/dashboard",
 
@@ -75,31 +100,24 @@ Authorization:
 
 }
 
-)
+);
 
-.then(
-
-async res=>{
 
 
 if(
-res.status === 401
+
+res.status===401 ||
+
+res.status===403
+
 ){
 
-localStorage.removeItem(
-"business_token"
-);
-
-localStorage.removeItem(
-"business_user"
-);
-
-location =
-"business-login.html";
+logout();
 
 return;
 
 }
+
 
 
 const data =
@@ -115,6 +133,7 @@ const balance =
 data.wallet &&
 data.wallet.balance
 ) || 0;
+
 
 
 const currency =
@@ -139,7 +158,9 @@ Welcome 👋
 </p>
 
 <h2 class="text-2xl font-bold">
+
 ${vendor.business_name || "Business"}
+
 </h2>
 
 </div>
@@ -283,21 +304,21 @@ rounded-[28px]
 p-5
 shadow">
 
-${row("📣","Social Tasks",data.social_tasks || 0)}
+${row("📣","Social Tasks",data.social_tasks)}
 
-${row("💻","Freelance Jobs",data.freelance_jobs || 0)}
+${row("💻","Freelance Jobs",data.freelance_jobs)}
 
-${row("🧑‍💼","Hiring Jobs",data.hiring_jobs || 0)}
+${row("🧑‍💼","Hiring Jobs",data.hiring_jobs)}
 
-${row("⭐","Influencer Jobs",data.influencer_jobs || 0)}
+${row("⭐","Influencer Jobs",data.influencer_jobs)}
 
-${row("📥","Pending Proofs",data.pending_reviews || 0)}
+${row("📥","Pending Proofs",data.pending_reviews)}
 
-${row("✅","Approved",data.approved_reviews || 0)}
+${row("✅","Approved",data.approved_reviews)}
 
-${row("❌","Rejected",data.rejected_reviews || 0)}
+${row("❌","Rejected",data.rejected_reviews)}
 
-${row("🔔","Notifications",data.unread_notifications || 0)}
+${row("🔔","Notifications",data.unread_notifications)}
 
 </div>
 
@@ -318,25 +339,47 @@ grid-cols-4
 p-3
 text-center">
 
-<a href="business-dashboard.html" class="text-2xl">🏠</a>
+<a
+href="business-dashboard.html"
+class="text-2xl">
 
-<a href="business-create-job.html" class="text-2xl">➕</a>
+🏠
 
-<a href="business-notifications.html" class="text-2xl">🔔</a>
+</a>
 
-<a href="business-profile.html" class="text-2xl">👤</a>
+
+<a
+href="business-create-job.html"
+class="text-2xl">
+
+➕
+
+</a>
+
+
+<a
+href="business-notifications.html"
+class="text-2xl">
+
+🔔
+
+</a>
+
+
+<a
+href="business-profile.html"
+class="text-2xl">
+
+👤
+
+</a>
 
 </div>
 
 `;
 
-}
 
-)
-
-.catch(
-
-()=>{
+}catch{
 
 loader.remove();
 
@@ -352,7 +395,26 @@ Could not load dashboard
 
 }
 
+}
+
+
+
+
+
+function logout(){
+
+localStorage.removeItem(
+"business_token"
 );
+
+localStorage.removeItem(
+"business_vendor"
+);
+
+location =
+"business-login.html";
+
+}
 
 
 
@@ -381,7 +443,11 @@ gap-3">
 
 </div>
 
-<b>${value}</b>
+<b>
+
+${value || 0}
+
+</b>
 
 </div>
 
