@@ -301,7 +301,8 @@ document
 .getElementById(
 "email"
 )
-.value,
+.value
+.trim(),
 
 password:
 document
@@ -325,39 +326,14 @@ await res.json();
 hideLoader();
 
 
-
-const messages = {
-
-"Invalid login":
-"Incorrect email or password",
-
-"Verify email first":
-"Please verify your email",
-
-"Await admin approval":
-"Your account is under review",
-
-"Login successful":
-"Login successful"
-
-};
-
-
-
 showToast(
-
-messages[
 data.message
-] ||
-
-"Completed"
-
 );
 
 
 
-
 if(
+res.ok &&
 data.token
 ){
 
@@ -368,7 +344,7 @@ data.token
 
 
 localStorage.setItem(
-"business_user",
+"business_vendor",
 JSON.stringify(
 data.vendor
 )
@@ -482,4 +458,4 @@ toast
 </script>
 
 </body>
-</html>
+    </html>
