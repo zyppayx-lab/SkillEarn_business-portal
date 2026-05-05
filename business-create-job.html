@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Create Campaign</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -14,7 +13,15 @@
 
 <div
 id="loader"
-class="hidden fixed inset-0 bg-black/10 z-50 flex items-center justify-center">
+class="
+hidden
+fixed
+inset-0
+bg-black/10
+z-50
+flex
+items-center
+justify-center">
 
 <div class="
 w-16
@@ -23,7 +30,8 @@ rounded-full
 border-[5px]
 border-blue-100
 border-t-blue-600
-animate-spin">
+animate-spin
+bg-white">
 </div>
 
 </div>
@@ -31,43 +39,69 @@ animate-spin">
 
 <div
 id="toast"
-class="hidden fixed bottom-5 left-4 right-4 z-50">
+class="
+hidden
+fixed
+bottom-5
+left-4
+right-4
+z-50">
 </div>
+
 
 
 <script>
 
 "use strict";
 
+
 const API =
 "https://skillearn.onrender.com";
+
 
 const token =
 localStorage.getItem(
 "business_token"
 );
 
+
 if(!token){
+
 location =
 "business-login.html";
+
 }
 
+
 let pricing = null;
+
 
 start();
 
 
+
+
 async function start(){
+
+try{
 
 await getPricing();
 
 render();
 
-updateUI();
+toggleFields();
 
 updatePrice();
 
+}catch{
+
+location =
+"business-dashboard.html";
+
 }
+
+}
+
 
 
 
@@ -76,23 +110,31 @@ async function getPricing(){
 const res =
 await fetch(
 
-API +
+API+
 "/api/business/pricing",
 
 {
+
 headers:{
+
 Authorization:
 "Bearer " +
 token
+
 }
+
 }
 
 );
+
 
 pricing =
 await res.json();
 
 }
+
+
+
 
 
 
@@ -102,21 +144,36 @@ document.getElementById(
 "app"
 ).innerHTML = `
 
-<div class="p-4 pb-20">
+<div class="
+p-4
+pb-20">
 
-<div class="mb-6">
+
+
+
+<div class="
+mb-6">
 
 <h1 class="
 text-2xl
 font-bold">
+
 Create Campaign
+
 </h1>
 
-<p class="text-slate-500">
+
+<p class="
+text-slate-500">
+
 Social tasks or jobs
+
 </p>
 
 </div>
+
+
+
 
 
 <div class="
@@ -125,10 +182,14 @@ rounded-[28px]
 shadow-xl
 p-6">
 
+
+
+
 <select
 id="purpose"
+
 onchange="
-updateUI();
+toggleFields();
 updatePrice();
 "
 
@@ -159,8 +220,10 @@ Influencer Job
 
 
 
+
 <input
 id="title"
+
 placeholder="Title"
 
 class="
@@ -172,8 +235,10 @@ mb-4">
 
 
 
+
 <textarea
 id="description"
+
 placeholder="Description"
 
 class="
@@ -187,8 +252,10 @@ h-28">
 
 
 
+
 <input
 id="link"
+
 placeholder="Social link"
 
 class="
@@ -200,12 +267,19 @@ mb-4">
 
 
 
+
 <input
 id="qty"
+
 type="number"
+
 value="1"
+
 min="1"
-oninput="updatePrice()"
+
+oninput="
+updatePrice()
+"
 
 class="
 w-full
@@ -213,14 +287,20 @@ border
 p-4
 rounded-2xl
 mb-4">
+
 
 
 
 <input
 id="budget"
+
 type="number"
+
 placeholder="Budget"
-oninput="updatePrice()"
+
+oninput="
+updatePrice()
+"
 
 class="
 w-full
@@ -228,6 +308,7 @@ border
 p-4
 rounded-2xl
 mb-4">
+
 
 
 
@@ -237,9 +318,13 @@ rounded-2xl
 p-5
 mb-5">
 
-<p class="text-slate-500">
+<p class="
+text-slate-500">
+
 Amount
+
 </p>
+
 
 <h1
 id="price"
@@ -247,15 +332,18 @@ id="price"
 class="
 text-2xl
 font-bold">
+
 0
+
 </h1>
 
 </div>
 
 
 
+
 <button
-onclick="createCampaign()"
+onclick="submitCampaign()"
 
 class="
 w-full
@@ -265,9 +353,12 @@ py-4
 rounded-2xl
 font-bold">
 
-Create
+Publish
 
 </button>
+
+
+
 
 </div>
 
@@ -279,27 +370,34 @@ Create
 
 
 
-function updateUI(){
+
+
+
+function toggleFields(){
 
 const purpose =
 value(
 "purpose"
 );
 
+
 const link =
 document.getElementById(
 "link"
 );
+
 
 const qty =
 document.getElementById(
 "qty"
 );
 
+
 const budget =
 document.getElementById(
 "budget"
 );
+
 
 
 
@@ -316,7 +414,12 @@ qty.style.display =
 budget.style.display =
 "none";
 
-}else{
+}
+
+
+else if(
+purpose==="hiring"
+){
 
 link.style.display =
 "none";
@@ -325,13 +428,28 @@ qty.style.display =
 "none";
 
 budget.style.display =
-purpose==="hiring"
-? "none"
-: "block";
+"none";
+
+}
+
+
+else{
+
+link.style.display =
+"none";
+
+qty.style.display =
+"none";
+
+budget.style.display =
+"block";
 
 }
 
 }
+
+
+
 
 
 
@@ -341,12 +459,15 @@ if(!pricing){
 return;
 }
 
+
 const purpose =
 value(
 "purpose"
 );
 
+
 let amount = 0;
+
 
 
 
@@ -356,13 +477,18 @@ purpose==="social"
 
 amount =
 
-pricing.social.amount *
+Number(
+pricing.social.amount
+)
+
+*
 
 Number(
-value("qty")
+value("qty") || 1
 );
 
 }
+
 
 
 
@@ -371,12 +497,13 @@ purpose==="freelance"
 ){
 
 amount =
+
 Number(
-value("budget")
-|| 0
+value("budget") || 0
 );
 
 }
+
 
 
 
@@ -385,9 +512,13 @@ purpose==="hiring"
 ){
 
 amount =
-pricing.hiring;
+
+Number(
+pricing.hiring
+);
 
 }
+
 
 
 
@@ -396,50 +527,46 @@ purpose==="influencer"
 ){
 
 amount =
+
 Number(
-value("budget")
-|| 0
+value("budget") || 0
 );
 
 }
+
 
 
 
 document.getElementById(
 "price"
 ).innerHTML =
+
 amount.toLocaleString();
 
 }
 
 
 
-async function createCampaign(){
+
+
+
+async function submitCampaign(){
 
 loader(true);
 
+
 try{
+
+
+let endpoint =
+"";
+
 
 const purpose =
 value(
 "purpose"
 );
 
-let endpoint;
-
-let payload = {
-
-title:
-value(
-"title"
-),
-
-description:
-value(
-"description"
-)
-
-};
 
 
 
@@ -450,19 +577,8 @@ purpose==="social"
 endpoint =
 "/api/business/create-social-task";
 
-payload.link =
-value(
-"link"
-);
-
-payload.qty =
-Number(
-value(
-"qty"
-)
-);
-
 }
+
 
 
 
@@ -473,14 +589,8 @@ purpose==="freelance"
 endpoint =
 "/api/business/create-freelance";
 
-payload.budget =
-Number(
-value(
-"budget"
-)
-);
-
 }
+
 
 
 
@@ -495,6 +605,7 @@ endpoint =
 
 
 
+
 if(
 purpose==="influencer"
 ){
@@ -502,14 +613,48 @@ purpose==="influencer"
 endpoint =
 "/api/business/create-influencer";
 
-payload.budget =
+}
+
+
+
+
+const payload = {
+
+title:
+value(
+"title"
+),
+
+description:
+value(
+"description"
+),
+
+link:
+value(
+"link"
+),
+
+qty:
 Number(
+
+value(
+"qty"
+) || 1
+
+),
+
+budget:
+Number(
+
 value(
 "budget"
-)
-);
+) || 0
 
-}
+)
+
+};
+
 
 
 
@@ -545,14 +690,26 @@ payload
 
 
 
+
 const data =
 await res.json();
 
+
+
+
 loader(false);
 
+
+
+
 toast(
+
+prettyMessage(
 data.message
+)
+
 );
+
 
 
 
@@ -569,12 +726,14 @@ location =
 
 }
 
+
+
 }catch{
 
 loader(false);
 
 toast(
-"Connection failed"
+"Could not publish"
 );
 
 }
@@ -583,13 +742,59 @@ toast(
 
 
 
+
+
+
+function prettyMessage(raw){
+
+const map = {
+
+"Task created":
+"Campaign created successfully",
+
+"Freelance created":
+"Freelance job published successfully",
+
+"Hiring created":
+"Hiring job published successfully",
+
+"Influencer created":
+"Influencer campaign published successfully",
+
+"Insufficient wallet":
+"Your wallet balance is too low. Please fund your wallet.",
+
+"Below minimum":
+"Budget is below the required minimum.",
+
+"Unauthorized":
+"Session expired. Please login again."
+
+};
+
+
+return map[
+raw
+] || "Completed";
+
+}
+
+
+
+
+
+
 function value(id){
 
 return document
-.getElementById(id)
-.value;
+.getElementById(
+id
+).value;
 
 }
+
+
+
 
 
 
@@ -613,12 +818,18 @@ show
 
 
 
+
+
+
 function toast(msg){
 
 const t =
 document.getElementById(
 "toast"
 );
+
+
+
 
 t.innerHTML = `
 
@@ -636,9 +847,15 @@ ${msg}
 
 `;
 
+
+
+
 t.classList.remove(
 "hidden"
 );
+
+
+
 
 setTimeout(()=>{
 
@@ -653,4 +870,4 @@ t.classList.add(
 </script>
 
 </body>
-</html>
+  </html>
